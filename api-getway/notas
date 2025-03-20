@@ -1,0 +1,19 @@
+instanciamos solo una vez el cliente : prisma-client.ts
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+export default prisma;
+
+
+
+para manejar los seeders de la bd podemos restablecer los datos o crearlos desde 0
+ "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  }
+
+
+manejo de migraciones de la bd 
+    "prisma:generate": "prisma generate",
+    "migration:create": "prisma migrate dev --create-only",
+    "migrate": "prisma migrate deploy",
+    "db:seed": "prisma db seed"
