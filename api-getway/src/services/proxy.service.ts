@@ -21,7 +21,7 @@ const handleProxyRequest = (proxyReq: any, req: Request, res: Response) => {
     ip: req.ip,
     method: req.method,
     path: proxyReq.path,
-    service: `${req.baseUrl.split("/")[1]}-service`, // This will output: auth-service
+    service: `${req.baseUrl.split("/")[1]}-service`,
     statusCode: res.statusCode,
     timestamp: new Date().toISOString(),
     userAgent: req.get("user-agent"),
