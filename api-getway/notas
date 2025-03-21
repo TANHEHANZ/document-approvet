@@ -17,3 +17,10 @@ manejo de migraciones de la bd
     "migration:create": "prisma migrate dev --create-only",
     "migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed"
+
+
+
+
+    //  tengo que manejar un diccionario de datos
+// tengo que manejar cache y registrar las rutas a usar en el servicio
+//  con ello me permitira manejar de mejor forma la concurrencia de los datos

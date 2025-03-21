@@ -1,3 +1,16 @@
+import { S_Redirect } from "../enum/redirect.enum";
+import { PROXYTIMEOUT } from "./constants";
+
+interface ServiceConfig {
+  url: string;
+  timeout: number;
+  redirect: S_Redirect;
+}
+
+interface Services {
+  [key: string]: ServiceConfig;
+}
+
 const config = {
   env: process.env.NODE_ENV || "development",
   port: parseInt(process.env.PORT || "3000"),
@@ -6,9 +19,20 @@ const config = {
   issuerBaseUrl: process.env.ISSUER_BASE_URL || "",
   audience: process.env.AUDIENCE || "",
   services: {
-    auth: process.env.AUTH_SERVICE_URL || "http://localhost:3002",
-    approvent: process.env.APPROVENT_SERVICE_URL || "http://localhost:3003",
-  },
+    auth: {
+      url: process.env.AUTH_SERVICE_URL || "http://localhost:3002",
+      timeout: parseInt(process.env.AUTH_TIMEOUT as string) || PROXYTIMEOUT,
+      redirect: (process.env.AUTH_REDIRECT as S_Redirect) || S_Redirect.AUTH,
+    },
+    approvent: {
+      url: process.env.APPROVENT_SERVICE_URL || "http://localhost:3003",
+      timeout:
+        parseInt(process.env.APPROVENT_TIMEOUT as string) || PROXYTIMEOUT,
+      redirect:
+        (process.env.APPROVENT_REDIRECT as S_Redirect) ||
+        S_Redirect.APPROVEMENT,
+    },
+  } as Services,
 };
 
 export default config;
