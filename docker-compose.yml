@@ -1,6 +1,33 @@
 name: firma_gamc
 version: "3.8"
+
 services:
+  api-gateway:
+    container_name: firma_gamc_gateway
+    build:
+      context: ./api-getway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api-getway/logs:/code/logs
+
+    networks:
+      - firma_gamc_network
+
+  auth-service:
+    container_name: firma_gamc_auth
+    build:
+      context: ./authentication-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+    networks:
+      - firma_gamc_network
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: firma_gamc_zookeeper
@@ -8,6 +35,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
     networks:
       - firma_gamc_network
+
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: firma_gamc_kafka

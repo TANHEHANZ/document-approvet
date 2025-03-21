@@ -1,6 +1,6 @@
 import { createServer } from "./server";
 
-const port = 3003;
+const port = 3001;
 const server = createServer();
 
 server.listen(port, () => {
