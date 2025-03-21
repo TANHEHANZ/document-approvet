@@ -3,6 +3,7 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import { ServiceType } from "../enum/services.enum";
 import { Socket } from "net";
 import config from "../config/config";
+import logger from "../config/logger";
 
 interface ProxyOptions {
   serviceType: ServiceType;
@@ -14,9 +15,40 @@ const handleProxyRequest = (proxyReq: any, req: Request, res: Response) => {
     proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
     proxyReq.write(bodyData);
   }
+
+  logger.info(`Request completed`, {
+    environment: config.env,
+    ip: req.ip,
+    method: req.method,
+    path: proxyReq.path,
+    service: `${req.baseUrl.split("/")[1]}-service`, // This will output: auth-service
+    statusCode: res.statusCode,
+    timestamp: new Date().toISOString(),
+    userAgent: req.get("user-agent"),
+  });
 };
 
+const handleProxyResponse = (proxyRes: any, req: Request, res: Response) => {
+  logger.info(`Request completed`, {
+    environment: config.env,
+    ip: req.ip,
+    method: req.method,
+    path: req.path,
+    service: `${req.baseUrl.split("/")[1]}-service`,
+    statusCode: proxyRes.statusCode,
+    timestamp: new Date().toISOString(),
+    userAgent: req.get("user-agent"),
+  });
+};
 const handleError = (err: Error, req: Request, res: any) => {
+  logger.error(`Microservice communication error`, {
+    service: req.baseUrl.replace("/", ""),
+    errorType: err.name,
+    errorMessage: err.message,
+    path: req.path,
+    method: req.method,
+  });
+
   if (!(res instanceof Socket)) {
     res.status(500).json({ error: "Error interno del servidor" });
   }
@@ -31,6 +63,7 @@ const createProxyOptions = ({ serviceType }: ProxyOptions) => ({
   timeout: config.services[serviceType].timeout,
   on: {
     proxyReq: handleProxyRequest,
+    proxyRes: handleProxyResponse,
     error: handleError,
   },
 });
