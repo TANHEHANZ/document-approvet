@@ -42,7 +42,7 @@ const handleProxyResponse = (proxyRes: any, req: Request, res: Response) => {
 };
 const handleError = (err: Error, req: Request, res: any) => {
   logger.error(`Microservice communication error`, {
-    service: req.baseUrl.replace("/", ""),
+    service: `${req.baseUrl.split("/")[1]}-service`,
     errorType: err.name,
     errorMessage: err.message,
     path: req.path,

@@ -32,6 +32,12 @@ const config = {
         (process.env.APPROVENT_REDIRECT as S_Redirect) ||
         S_Redirect.APPROVEMENT,
     },
+    signed: {
+      url: process.env.SIGNED_GAMC || "http://localhost:3004",
+      timeout: parseInt(process.env.SIGNED_TIMEOUT as string) || PROXYTIMEOUT,
+      redirect:
+        (process.env.SIGNED_REDIRECT as S_Redirect) || S_Redirect.SIGNED,
+    },
   } as Services,
 };
 

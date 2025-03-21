@@ -10,5 +10,16 @@ v1.use(
     serviceType: ServiceType.AUTH,
   })
 );
-
+v1.use(
+  "/approvent",
+  createServiceProxy({
+    serviceType: ServiceType.APPROVEMENT,
+  })
+);
+v1.use(
+  "/signed-gamc",
+  createServiceProxy({
+    serviceType: ServiceType.SIGNED,
+  })
+);
 export default v1;
