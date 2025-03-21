@@ -12,7 +12,7 @@ export const createServer = () => {
     .disable("x-powered-by")
     .use(express.json())
     .use(cors())
-    .use("/v1", v1)
+    .use("/", v1)
     .use(morganMiddleware)
     .use(loggerMiddleware)
     .use(express.urlencoded({ extended: true }))
