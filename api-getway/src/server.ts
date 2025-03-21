@@ -10,17 +10,17 @@ export const createServer = () => {
   const app = express();
   app
     .disable("x-powered-by")
+    .use(express.json())
+    .use(cors())
+    .use("/v1", v1)
     .use(morganMiddleware)
     .use(loggerMiddleware)
     .use(express.urlencoded({ extended: true }))
-    .use(express.json())
-    .use(cors());
+    .use(express.json());
 
   app.get("/health", (req: Request, res: Response) => {
     res.json({ ok: true, environment: config.env });
   });
-
-  app.use("/v1", v1);
 
   app.use(errorHandler);
 

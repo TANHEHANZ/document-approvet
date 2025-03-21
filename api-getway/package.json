@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn src/app.ts",
+    "dev": "ts-node-dev --respawn --no-deprecation src/app.ts",
     "start": "node dist/app.js",
     "build": "tsc"
   },
