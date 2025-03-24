@@ -1,0 +1,105 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  roles       RolePermission[]
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  statusId    String
+  status      Status   @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model User {
+  id         String     @id @default(uuid())
+  email      String?    @unique
+  username   String
+  password   String
+  userTypeId String
+  userType   UserType   @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
+  statusId   String
+  status     Status     @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  roles      UserRole[]
+  sessions   Session[]
+
+  @@index([userTypeId])
+  @@index([statusId])
+  @@index([email])
+  @@index([username])
+}
+
+model UserType {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users User[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  isActive  Boolean  @default(true)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([token])
+}
+
+model Status {
+  id        String   @id @default(uuid())
+  status    String   @unique
+  color     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+  roles     Role[]
+}
