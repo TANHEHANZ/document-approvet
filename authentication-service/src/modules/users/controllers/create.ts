@@ -15,6 +15,7 @@ export const createUser = async (
     });
     if (existingUser) {
       API.conflict(res, "Este usuario ya existe");
+      return;
     }
     const hashedPassword = await hashPassword(req.body.password);
 
@@ -23,7 +24,16 @@ export const createUser = async (
         ...req.body,
         password: hashedPassword,
       },
-      omit: { password: true },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        ci: true,
+        userTypeId: true,
+        statusId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     API.created(res, "Usuario creado correctamente", user);
