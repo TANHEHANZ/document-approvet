@@ -7,7 +7,7 @@ import {
   INTEGRATIONS,
   AUDIT,
 } from "../../../../shared/config/permits";
-
+import { STATUS } from "../../../../shared/config/status";
 import { JWT_CONFIG } from "../../../../shared/CONSTANTS/JWT_CONFIG";
 import { API } from "../../../../shared/config/response";
 import { HTTP_STATUS } from "../../../../shared/CONSTANTS/HTTP";
@@ -22,6 +22,7 @@ export {
   AUDIT,
   JWT_CONFIG,
   HTTP_STATUS,
+  STATUS,
   API,
 };
 

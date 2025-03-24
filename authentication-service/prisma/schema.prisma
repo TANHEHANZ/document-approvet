@@ -62,6 +62,7 @@ model User {
   email      String?    @unique
   username   String
   password   String
+  ci         String     @unique
   userTypeId String
   userType   UserType   @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
   statusId   String

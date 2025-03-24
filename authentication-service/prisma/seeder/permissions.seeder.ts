@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../src/infraestructure/config/prisma.client";
 import {
   USER_MANAGEMENT,
   ROLE_MANAGEMENT,
@@ -7,9 +7,7 @@ import {
   SESSIONS,
   INTEGRATIONS,
   AUDIT,
-} from "../../src/commands/CONSTANTS";
-
-const prisma = new PrismaClient();
+} from "../../src/infraestructure/CONSTANTS";
 
 const permissions = [
   ...Object.values(USER_MANAGEMENT),
@@ -22,21 +20,43 @@ const permissions = [
 ];
 
 async function seedPermissions() {
-  for (const permission of permissions) {
-    await prisma.permission.upsert({
-      where: { name: permission },
-      update: {},
-      create: {
-        name: permission,
-        description: `Permission for ${permission
-          .replace(/_/g, " ")
-          .toLowerCase()}`,
-      },
-    });
+  try {
+    const existingPermissions = await prisma.permission.findMany();
+
+    if (existingPermissions.length === 0) {
+      console.log("Seeding permissions...");
+
+      for (const permission of permissions) {
+        await prisma.permission.upsert({
+          where: { name: permission },
+          update: {},
+          create: {
+            name: permission,
+            description: `Permission for ${permission
+              .replace(/_/g, " ")
+              .toLowerCase()}`,
+          },
+        });
+      }
+      console.log("Permissions seeded successfully.");
+    } else {
+      console.log("Permissions already exist, skipping seed.");
+    }
+  } catch (error) {
+    console.error("Error seeding permissions:", error);
+    throw error;
   }
-  console.log("Permissions seeded successfully.");
 }
 
-seedPermissions()
-  .catch((e) => console.error(e))
-  .finally(async () => await prisma.$disconnect());
+if (require.main === module) {
+  seedPermissions()
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
+
+export { seedPermissions };
