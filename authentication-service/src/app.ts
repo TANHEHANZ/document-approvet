@@ -1,8 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
 import { createServer } from "./server";
+import config from "./commands/config/config";
 
-const port = 3001;
 const server = createServer();
 
-server.listen(port, () => {
-  console.log(`Authentication Service running on port ${port}`);
+server.listen(config.port, () => {
+  console.log(`API-GETWAY Run in :  ${config.port}`);
 });
