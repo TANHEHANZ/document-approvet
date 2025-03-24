@@ -3,27 +3,23 @@ import { ZodError, ZodSchema } from "zod";
 import { fromError } from "zod-validation-error";
 import { API } from "../CONSTANTS";
 
-type ValidateSource = "body" | "query" | "params";
-
-export const validate = (
-  schema: ZodSchema,
-  source: ValidateSource = "body"
-) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+export const validate =
+  (schema: ZodSchema<any>) =>
+  (req: Request, res: Response, next: NextFunction): void => {
     try {
-      const data = await schema.parseAsync(req[source]);
-      req[source] = data;
+      schema.parse(req.body);
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const validationError = fromError(error);
-        return API.badRequest(
-          res,
-          "Validation failed",
-          validationError.details
-        );
+        const e = fromError(error).details;
+        API.conflict(res, "Error de validacion", e);
+        return;
       }
-      return API.serverError(res, "Validation error", error);
+      API.serverError(
+        res,
+        "Error de validacion",
+        error instanceof Error ? error.message : "Ocurrió un error inesperado"
+      );
+      return;
     }
   };
-};

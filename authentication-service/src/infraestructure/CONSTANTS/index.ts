@@ -35,6 +35,6 @@ export const PERMISSIONS = {
   INTEGRATIONS,
   AUDIT,
 } as const;
-
+export const SALT_ROUNDS = 10;
 export type PermissionType = typeof PERMISSIONS;
 export type PermissionKey = keyof typeof PERMISSIONS;

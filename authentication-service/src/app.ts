@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { createServer } from "./server";
-import config from "./commands/config/config";
+import config from "./infraestructure/config/config";
 
 const server = createServer();
 

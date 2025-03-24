@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+import auth from "./routes";
 
 export const createServer = () => {
   const app = express();
@@ -8,7 +9,8 @@ export const createServer = () => {
     .disable("x-powered-by")
     .use(express.urlencoded({ extended: true }))
     .use(express.json())
-    .use(cors());
+    .use(cors())
+    .use("/", auth);
 
   app.get("/", (req: Request, res: Response) => {
     res.json({
