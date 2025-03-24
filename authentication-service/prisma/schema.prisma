@@ -1,10 +1,12 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
+  schemas  = ["auth"]
 }
 
 model UserRole {
@@ -15,6 +17,7 @@ model UserRole {
   role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@unique([userId, roleId])
+  @@schema("auth")
 }
 
 model RolePermission {
@@ -25,6 +28,7 @@ model RolePermission {
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@unique([roleId, permissionId])
+  @@schema("auth")
 }
 
 model Permission {
@@ -35,19 +39,22 @@ model Permission {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   roles       RolePermission[]
+
+  @@schema("auth")
 }
 
 model Role {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String           @id @default(uuid())
+  name        String           @unique
   description String
   statusId    String
-  status      Status   @relation(fields: [statusId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
+  status      Status           @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
   users       UserRole[]
   permissions RolePermission[]
+
+  @@schema("auth")
 }
 
 model User {
@@ -68,6 +75,7 @@ model User {
   @@index([statusId])
   @@index([email])
   @@index([username])
+  @@schema("auth")
 }
 
 model UserType {
@@ -77,8 +85,9 @@ model UserType {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  users       User[]
 
-  users User[]
+  @@schema("auth")
 }
 
 model Session {
@@ -92,6 +101,7 @@ model Session {
   updatedAt DateTime @updatedAt
 
   @@index([token])
+  @@schema("auth")
 }
 
 model Status {
@@ -102,4 +112,6 @@ model Status {
   updatedAt DateTime @updatedAt
   users     User[]
   roles     Role[]
+
+  @@schema("auth")
 }
