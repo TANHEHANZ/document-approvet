@@ -1,0 +1,3 @@
+- [ ] manage websocket
+- [ ] update manage rol for websocket
+- [ ]
