@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PERMISSIONS } from "../CONSTANTS";
+import { PERMISSIONS } from "../CONSTANTS/permission";
 
 export const BASE_PERMISSIONS = {
   USER: [

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../../infraestructure/config/prisma.client";
-import { API } from "../../../infraestructure/CONSTANTS";
+import { API } from "../../../infraestructure/CONSTANTS/permission";
 import { hashPassword } from "../../../infraestructure/helpers/bycript";
 
 export const createUser = async (
@@ -29,7 +29,7 @@ export const createUser = async (
         email: true,
         username: true,
         ci: true,
-        userTypeId: true,
+        role: true,
         statusId: true,
         createdAt: true,
         updatedAt: true,

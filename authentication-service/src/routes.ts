@@ -1,11 +1,12 @@
 import { Router } from "express";
 import userRouter from "./modules/users/user.router";
-import rolRouter from "./modules/roles/roles.router";
 import permssRouter from "./modules/permission/permission.routes";
+import { authMiddleware } from "./infraestructure/midlweware/authentication";
 
 const auth = Router();
-auth.use("/user", userRouter);
-auth.use("/rols", rolRouter);
-auth.use("/permissions", permssRouter);
+auth
+  .use(authMiddleware)
+  .use("/user", userRouter)
+  .use("/permission", permssRouter);
 
 export default auth;

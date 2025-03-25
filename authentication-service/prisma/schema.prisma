@@ -29,7 +29,7 @@ model User {
   system      System?  @relation(fields: [systemId], references: [id])
   statusId    String
   status      Status   @relation(fields: [statusId], references: [id], onDelete: Cascade)
-  permissions Json?    @default("{\"role\": [], \"additional\": []}")
+  permissions Json?    @default("{}")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

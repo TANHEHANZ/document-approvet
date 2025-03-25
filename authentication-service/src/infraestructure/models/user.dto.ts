@@ -1,16 +1,19 @@
 import { z } from "zod";
+import { UserRole } from "@prisma/client";
 
 export const CreateUserSchema = z.object({
   email: z.string().email().optional(),
-  username: z.string().min(3).max(50),
+  username: z.string().min(3).max(50).optional(),
   ci: z.string(),
   password: z.string().min(8).max(100),
-  userTypeId: z.string().uuid(),
+  role: z.nativeEnum(UserRole),
   statusId: z.string().uuid(),
+  systemId: z.string().uuid().optional(),
 });
 
 export const UpdateUserSchema = CreateUserSchema.partial().omit({
   password: true,
+  role: true,
 });
 
 export const ChangePasswordSchema = z
@@ -28,24 +31,19 @@ export const UserSchema = CreateUserSchema.extend({
   id: z.string().uuid(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  roles: z
-    .array(
-      z.object({
-        id: z.string().uuid(),
-        roleId: z.string().uuid(),
-      })
-    )
+  system: z
+    .object({
+      id: z.string().uuid(),
+      name: z.string(),
+      description: z.string().optional(),
+      isActive: z.boolean(),
+    })
     .optional(),
-  sessions: z
-    .array(
-      z.object({
-        id: z.string().uuid(),
-        token: z.string(),
-        isActive: z.boolean(),
-        expiresAt: z.date(),
-      })
-    )
-    .optional(),
+  status: z.object({
+    id: z.string().uuid(),
+    status: z.string(),
+    color: z.string(),
+  }),
 });
 
 export type CreateUserDto = z.infer<typeof CreateUserSchema>;
