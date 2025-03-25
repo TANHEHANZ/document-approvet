@@ -9,99 +9,46 @@ datasource db {
   schemas  = ["auth"]
 }
 
-model UserRole {
-  id     String @id @default(uuid())
-  userId String
-  roleId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, roleId])
-  @@schema("auth")
-}
-
-model RolePermission {
-  id           String     @id @default(uuid())
-  roleId       String
-  permissionId String
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@unique([roleId, permissionId])
-  @@schema("auth")
-}
-
-model Permission {
-  id          String           @id @default(uuid())
-  name        String           @unique
-  description String
-  isActive    Boolean          @default(true)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  roles       RolePermission[]
-
-  @@schema("auth")
-}
-
-model Role {
-  id          String           @id @default(uuid())
-  name        String           @unique
-  description String
-  statusId    String
-  status      Status           @relation(fields: [statusId], references: [id], onDelete: Cascade)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  users       UserRole[]
-  permissions RolePermission[]
+enum UserRole {
+  SUPERADMIN
+  ADMIN
+  USER
+  SUPERVISOR
 
   @@schema("auth")
 }
 
 model User {
-  id         String     @id @default(uuid())
-  email      String?    @unique
-  username   String
-  password   String
-  ci         String     @unique
-  userTypeId String
-  userType   UserType   @relation(fields: [userTypeId], references: [id], onDelete: Cascade)
-  statusId   String
-  status     Status     @relation(fields: [statusId], references: [id], onDelete: Cascade)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  roles      UserRole[]
-  sessions   Session[]
+  id          String   @id @default(uuid())
+  email       String?  @unique
+  username    String?
+  password    String
+  ci          String   @unique
+  role        UserRole
+  systemId    String?
+  system      System?  @relation(fields: [systemId], references: [id])
+  statusId    String
+  status      Status   @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  permissions Json?    @default("{\"role\": [], \"additional\": []}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@index([userTypeId])
   @@index([statusId])
   @@index([email])
   @@index([username])
+  @@index([systemId])
   @@schema("auth")
 }
 
-model UserType {
+model System {
   id          String   @id @default(uuid())
   name        String   @unique
-  description String
+  description String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   users       User[]
 
-  @@schema("auth")
-}
-
-model Session {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String   @unique
-  isActive  Boolean  @default(true)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([token])
   @@schema("auth")
 }
 
@@ -112,7 +59,6 @@ model Status {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   users     User[]
-  roles     Role[]
 
   @@schema("auth")
 }
