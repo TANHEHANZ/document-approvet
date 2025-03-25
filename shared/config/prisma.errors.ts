@@ -1,7 +1,9 @@
-import { Prisma } from "@prisma/client";
-
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from "@prisma/client/runtime/library";
 export const handlePrismaError = (error: any) => {
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  if (error instanceof PrismaClientKnownRequestError) {
     switch (error.code) {
       case "P2002":
         return {
@@ -26,7 +28,7 @@ export const handlePrismaError = (error: any) => {
     }
   }
 
-  if (error instanceof Prisma.PrismaClientValidationError) {
+  if (error instanceof PrismaClientValidationError) {
     return {
       message: "Validation error",
       details: error.message,
