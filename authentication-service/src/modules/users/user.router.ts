@@ -7,10 +7,12 @@ import {
   getUserById,
 } from "./controllers";
 import { validate } from "../../infraestructure/midlweware/validated";
+// import { checkPermission } from "../../infraestructure/midlweware/permissions";
 import {
   CreateUserSchema,
   UpdateUserSchema,
 } from "../../infraestructure/models/user.dto";
+import { PERMISSIONS } from "@firma-gamc/shared";
 
 const userRouter = Router();
 

@@ -10,10 +10,18 @@ interface JwtPayload {
   role: UserRole;
 }
 
+interface UserPermissions {
+  roleBased: string[];
+  additional: string[];
+}
+type UserWithPermissions = Omit<User, "permissions"> & {
+  permissions: UserPermissions;
+};
+
 declare global {
   namespace Express {
     interface Request {
-      user?: User;
+      user?: UserWithPermissions;
       userRole?: UserRole;
     }
   }
@@ -47,7 +55,15 @@ export const authMiddleware = async (
       return;
     }
 
-    req.user = user;
+    const parsedPermissions: UserPermissions =
+      typeof user.permissions === "object"
+        ? (user.permissions as unknown as UserPermissions)
+        : { roleBased: [], additional: [] };
+    req.user = {
+      ...user,
+      permissions: parsedPermissions,
+    } as UserWithPermissions;
+
     req.userRole = user.role;
 
     next();

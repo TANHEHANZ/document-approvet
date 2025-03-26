@@ -5,8 +5,8 @@ import { authMiddleware } from "./infraestructure/midlweware/authentication";
 
 const auth = Router();
 auth
-  .use(authMiddleware)
   .use("/user", userRouter)
+  .use(authMiddleware)
   .use("/permission", permssRouter);
 
 export default auth;

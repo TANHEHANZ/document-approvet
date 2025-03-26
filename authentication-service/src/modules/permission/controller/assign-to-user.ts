@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { prisma } from "../../../infraestructure/config/prisma.client";
-import { API } from "../../../infraestructure/CONSTANTS/permission";
 // este mtetodo funciona pero debemos remplazarlo con la conexion de mediante web socket
 export const assignPerm = async (
   req: Request,

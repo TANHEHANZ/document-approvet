@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../../../infraestructure/config/prisma.client";
-import { API } from "../../../infraestructure/CONSTANTS/permission";
 import { hashPassword } from "../../../infraestructure/helpers/bycript";
-
+import { API, ROLES } from "@firma-gamc/shared";
+import { UserRole } from "@prisma/client";
 export const createUser = async (
   req: Request,
   res: Response
@@ -17,12 +17,18 @@ export const createUser = async (
       API.conflict(res, "Este usuario ya existe");
       return;
     }
+    const userRole = req.body.role as UserRole;
+    const rolePermissions = {
+      roleBased: [...ROLES[userRole].permissions],
+      additional: [],
+    };
     const hashedPassword = await hashPassword(req.body.password);
 
     const user = await prisma.user.create({
       data: {
         ...req.body,
         password: hashedPassword,
+        permissions: rolePermissions,
       },
       select: {
         id: true,

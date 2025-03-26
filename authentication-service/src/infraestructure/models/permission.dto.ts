@@ -1,12 +1,20 @@
 import { z } from "zod";
+import { PERMISSIONS, ROLES } from "@firma-gamc/shared";
 
-export const PermissionSchema = z.object({
-  id: z.string().uuid().optional(),
-  name: z.string().min(3).max(50),
-  description: z.string().min(10).max(200),
-  isActive: z.boolean().default(true),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-});
+export const PermissionSchema = z
+  .object({
+    roleBased: z.array(
+      z
+        .string()
+        .refine((val): val is Permission =>
+          Object.values(PERMISSIONS).some((group) =>
+            Object.values(group).includes(val)
+          )
+        )
+    ),
+    additional: z.array(z.string()),
+  })
+  .strict();
 
-export type PermissionDto = z.infer<typeof PermissionSchema>;
+export type Permission =
+  (typeof PERMISSIONS)[keyof typeof PERMISSIONS][keyof (typeof PERMISSIONS)[keyof typeof PERMISSIONS]];

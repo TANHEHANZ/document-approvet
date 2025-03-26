@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../../infraestructure/config/prisma.client";
-import { API } from "../../../infraestructure/CONSTANTS/permission";
+import { API } from "@firma-gamc/shared";
 
 export const updateUser = async (
   req: Request,
