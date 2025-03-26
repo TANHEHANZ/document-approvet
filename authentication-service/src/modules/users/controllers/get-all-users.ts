@@ -17,7 +17,7 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
             name: true,
           },
         },
-        status: {
+        state: {
           select: {
             status: true,
             color: true,

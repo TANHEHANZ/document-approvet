@@ -20,7 +20,7 @@ export const getUserById = async (
             name: true,
           },
         },
-        status: {
+        state: {
           select: {
             status: true,
             color: true,

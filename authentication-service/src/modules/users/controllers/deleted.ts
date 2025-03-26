@@ -22,7 +22,7 @@ export const deleteUser = async (
     const deletedUser = await prisma.user.update({
       where: { id },
       data: {
-        status: {
+        state: {
           connect: {
             status: "DELETED",
           },

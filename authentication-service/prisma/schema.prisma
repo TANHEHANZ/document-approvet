@@ -28,7 +28,7 @@ model User {
   systemId    String?
   system      System?  @relation(fields: [systemId], references: [id])
   statusId    String
-  status      Status   @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  state       Status   @relation(fields: [statusId], references: [id], onDelete: Cascade)
   permissions Json?    @default("{}")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -45,6 +45,7 @@ model System {
   name        String   @unique
   description String?
   isActive    Boolean  @default(true)
+  clientKey   String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   users       User[]
