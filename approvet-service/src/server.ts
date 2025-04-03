@@ -10,7 +10,7 @@ export const createServer = () => {
     .use(express.urlencoded({ extended: true }))
     .use(express.json())
     .use(cors())
-    .use("/", appovent);
+    .use("/v1/api/", appovent);
 
   app.get("/", (req: Request, res: Response) => {
     res.json({

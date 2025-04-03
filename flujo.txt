@@ -1,0 +1,45 @@
+- primero debe loguearse 
+- el sistema te redireccciona al sistema que pusiste 
+-al redireccionarte te manda un valor que es el code
+
+/////  ----- es todo ---- 
+
+
+nocostros con el code podemos consultar un token de secion de usuario 
+con este token manejariamos las demas solicitudes 
+
+para consultar el valor del token necesitamos dos valores , 
+-scope del sistema que manejo 
+-code que esto viene despues de que haya iniciado secion 
+
+[respuesta]
+el formato es : 
+{
+    "access_token": "", ---->    con este consultamos la informacion del usuario
+    "expires_in": tiempo,
+    "id_token": "",
+    "refresh_token": "",
+    "scope": "configuracion de los  valores del usuario esto seria por plataforma ",
+    "token_type": "Bearer"
+}
+
+
+// ------------------  manejo de aprovaciones ----- ////
+requiero que me pasen token del usaurio que inicio secion 
+debo enviar la solicitud con el token que yo tengo en mi servicio de ciudadania digital 
+
+---- envio de documento ---
+se debe generar el hash del documento con el documento original ---> guardamos el hash
+convertimos el documento en base 64 
+-eviamos el documento con los siguientes valores 
+{
+  "tipoDocumento": "PDF",
+  "documento": "base 64",
+  "hashDocumento": "con el que se firmo",
+  "idTramite": "un uuid que nosostros generamos",
+  "descripcion": "Descripción documento",
+  "token": "del usuario que inicio secion"
+}
+
+"/// si manejamos muchas solicitudes debemos usar colas y cache ademas debemos buscar la forma de manejar procesos en memoria y no gardar obejotos inecesarios 
+

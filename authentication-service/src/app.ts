@@ -6,5 +6,5 @@ import config from "./infraestructure/config/config";
 const server = createServer();
 
 server.listen(config.port, () => {
-  console.log(`API-GETWAY Run in :  ${config.port}`);
+  console.log(`SERVICE-AUTH Run in :  ${config.port}`);
 });
