@@ -1,0 +1,65 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["auth"]
+}
+
+enum UserRole {
+  SUPERADMIN
+  ADMIN
+  USER
+  SUPERVISOR
+
+  @@schema("auth")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String?  @unique
+  username    String?
+  password    String
+  ci          String   @unique
+  role        UserRole
+  systemId    String?
+  system      System?  @relation(fields: [systemId], references: [id])
+  statusId    String
+  state       Status   @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  permissions Json?    @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([statusId])
+  @@index([email])
+  @@index([username])
+  @@index([systemId])
+  @@schema("auth")
+}
+
+model System {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  clientKey   String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+
+  @@schema("auth")
+}
+
+model Status {
+  id        String   @id @default(uuid())
+  status    String   @unique
+  color     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+
+  @@schema("auth")
+}

@@ -9,57 +9,94 @@ datasource db {
   schemas  = ["auth"]
 }
 
-enum UserRole {
-  SUPERADMIN
-  ADMIN
-  USER
-  SUPERVISOR
+enum Provider {
+  CREDENTIALS
+  GOOGLE
+  CI
+
+  @@schema("auth")
+}
+
+enum StatusEnum {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  SUSPENDED
+  DEACTIVATED
+  PENDING_VERIFICATION
+  PASSWORD_EXPIRED
+  LOCKED
+  DELETED
+  EXTERNAL
+  ARCHIVED
 
   @@schema("auth")
 }
 
 model User {
-  id          String   @id @default(uuid())
-  email       String?  @unique
-  username    String?
-  password    String
-  ci          String   @unique
-  role        UserRole
-  systemId    String?
-  system      System?  @relation(fields: [systemId], references: [id])
-  statusId    String
-  state       Status   @relation(fields: [statusId], references: [id], onDelete: Cascade)
-  permissions Json?    @default("{}")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String        @id @default(uuid())
+  email       String?       @unique
+  full_name   String?
+  cel         String?
+  ci          String?       @unique
+  photo       String?
+  statusId    String?
+  Status      StatusEnum    @default(ACTIVE)
+  authMethods AuthMethods[]
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  roleId      String?
+  Role        Role?         @relation(fields: [roleId], references: [id])
 
-  @@index([statusId])
-  @@index([email])
-  @@index([username])
-  @@index([systemId])
+  @@map("users")
   @@schema("auth")
 }
 
-model System {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  description String?
-  isActive    Boolean  @default(true)
-  clientKey   String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  users       User[]
+model AuthMethods {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  provider   Provider
+  password   String?
+  google_id  String?  @unique
+  ci_number  String?  @unique
+  extra_data Json?
+  user       User     @relation(fields: [userId], references: [id])
+  created_at DateTime @default(now())
 
+  @@unique([userId, provider])
   @@schema("auth")
 }
 
-model Status {
-  id        String   @id @default(uuid())
-  status    String   @unique
-  color     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  users     User[]
+model Role {
+  id             String           @id @default(uuid())
+  name           String           @unique
+  users          User[]
+  RolePermission RolePermission[]
 
+  @@index([name], name: "idx_roles_name")
+  @@map("roles")
+  @@schema("auth")
+}
+
+model Permissons {
+  id             String           @id @default(uuid())
+  name           String           @unique
+  description    String?
+  RolePermission RolePermission[]
+
+  @@index([name], name: "idx_permissons_name")
+  @@map("permissons")
+  @@schema("auth")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permissons @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
   @@schema("auth")
 }

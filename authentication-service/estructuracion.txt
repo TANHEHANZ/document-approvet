@@ -51,3 +51,7 @@
    - Configuraciones específicas por sistema
    - Control de acceso API
 
+
+
+// par aligrado de datos podemos usar elastic Search 
+una heramienta que nos ayuda a buscar o filtrar rapido y eficiente 
