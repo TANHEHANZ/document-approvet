@@ -11,7 +11,7 @@ const credentialsSchema = baseAuthSchema.extend({
   password: z.string().min(8, "Password must be at least 8 characters long"),
 });
 
-const googleAuthSchema = baseAuthSchema.extend({
+export const googleAuthSchema = baseAuthSchema.extend({
   provider: z.literal(Provider.GOOGLE),
   google_id: z.string(),
   email: z.string().email("Invalid email format").optional(),

@@ -2,8 +2,13 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import auth from "./routes";
 import cookieParser from "cookie-parser";
+import passport from "passport";
+import { configureGoogleStrategy } from "./infraestructure/config/google";
+
 export const createServer = () => {
   const app = express();
+
+  configureGoogleStrategy();
 
   app
     .disable("x-powered-by")
@@ -11,7 +16,8 @@ export const createServer = () => {
     .use(express.json())
     .use(cors())
     .use(cookieParser())
-    .use("/", auth);
+    .use(passport.initialize())
+    .use("/v1/api/", auth);
 
   app.get("/", (req: Request, res: Response) => {
     res.json({

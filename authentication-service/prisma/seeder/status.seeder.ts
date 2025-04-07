@@ -1,5 +1,5 @@
+import { STATUS } from "document-approvet/shared";
 import { prisma } from "../../src/infraestructure/config/prisma.client";
-import { STATUS } from "../../src/infraestructure/CONSTANTS/status";
 
 async function seedStatuses() {
   try {
