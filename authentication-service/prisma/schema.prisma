@@ -39,6 +39,7 @@ model User {
   full_name   String?
   cel         String?
   ci          String?       @unique
+  lastIp      String?
   photo       String?
   statusId    String?
   Status      StatusEnum    @default(ACTIVE)
@@ -48,6 +49,7 @@ model User {
   roleId      String?
   Role        Role?         @relation(fields: [roleId], references: [id])
 
+  @@index([lastIp])
   @@map("users")
   @@schema("auth")
 }
