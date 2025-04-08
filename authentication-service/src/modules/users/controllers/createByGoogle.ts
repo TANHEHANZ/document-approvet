@@ -1,31 +1,36 @@
+import {
+  AuthError,
+  AuthErrorType,
+} from "../../../infraestructure/types/auth.error.type";
 import { prisma } from "../../../infraestructure/config/prisma.client";
 import { Provider, StatusEnum, User } from "@prisma/client";
 
 const VALID_STATUS: StatusEnum[] = [StatusEnum.ACTIVE, StatusEnum.EXTERNAL];
 
+interface AuthResponse {
+  user: User | null;
+  error?: AuthError;
+}
+
 export const createUserByGoogle = async (
   profile: any
-): Promise<User | null> => {
+): Promise<AuthResponse> => {
   try {
     const existingUser = await prisma.user.findUnique({
-      where: {
-        email: profile.email,
-      },
-      include: {
-        authMethods: true,
-      },
+      where: { email: profile.email },
+      include: { authMethods: true },
     });
 
     if (existingUser) {
       if (!VALID_STATUS.includes(existingUser.Status)) {
-        throw new Error(
-          `Account is ${existingUser.Status.toLowerCase()}. Please contact support.`
-        );
-        return null;
-      }
-
-      if (existingUser.Status === StatusEnum.DELETED) {
-        throw new Error("cuenta eliminada");
+        return {
+          user: null,
+          error: {
+            error: AuthErrorType.ACCESS_DENIED,
+            error_description: `Account is ${existingUser.Status.toLowerCase()}. Access denied due to account status.`,
+            error_uri: "/docs/errors/account-status",
+          },
+        };
       }
 
       const googleAuth = existingUser.authMethods.find(
@@ -33,31 +38,45 @@ export const createUserByGoogle = async (
       );
 
       if (googleAuth) {
-        return existingUser;
+        return { user: existingUser };
       } else {
-        throw new Error(
-          "User already exists with different authentication method"
-        );
+        return {
+          user: null,
+          error: {
+            error: AuthErrorType.INVALID_AUTH_METHOD,
+            error_description:
+              "Account exists with different authentication method. Please use the original authentication method.",
+            error_uri: "/docs/errors/auth-method",
+          },
+        };
       }
-    } else {
-      const newUser = await prisma.user.create({
-        data: {
-          email: profile.email,
-          full_name: profile.name,
-          photo: profile.picture,
-          authMethods: {
-            create: {
-              provider: Provider.GOOGLE,
-              google_id: profile.sub,
-            },
+    }
+
+    const newUser = await prisma.user.create({
+      data: {
+        email: profile.email,
+        full_name: profile.name,
+        photo: profile.picture,
+        authMethods: {
+          create: {
+            provider: Provider.GOOGLE,
+            google_id: profile.sub,
           },
         },
-      });
+      },
+    });
 
-      return newUser;
-    }
+    return { user: newUser };
   } catch (error) {
-    console.error("Error during Google authentication", error);
-    throw error;
+    console.error("Error during Google authentication:", error);
+    return {
+      user: null,
+      error: {
+        error: AuthErrorType.SERVER_ERROR,
+        error_description:
+          "An unexpected error occurred during authentication.",
+        error_uri: "/docs/errors/server-error",
+      },
+    };
   }
 };
