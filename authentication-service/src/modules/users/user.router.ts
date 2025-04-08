@@ -6,24 +6,17 @@ import {
   getUsers,
   getUserById,
 } from "./controllers";
-import { validate } from "../../infraestructure/midlweware/validated";
-// import { checkPermission } from "../../infraestructure/midlweware/permissions";
-import {
-  CreateUserSchema,
-  UpdateUserSchema,
-} from "../../infraestructure/models/user.dto";
 import { PERMISSIONS } from "@firma-gamc/shared";
+import { checkPermission } from "../../infraestructure/midlweware/check-permission";
+import { validate } from "../../infraestructure/midlweware/validated";
+import { CreateUserSchema } from "../../infraestructure/models/user.dto";
 
 const userRouter = Router();
 
-userRouter.post("/", validate(CreateUserSchema), createUser);
+userRouter.get("/", checkPermission(PERMISSIONS.USER.READ), getUsers);
 
-userRouter.get("/", getUsers);
-
-userRouter.get("/:id", getUserById);
-
-userRouter.put("/:id", validate(UpdateUserSchema), updateUser);
-
-userRouter.delete("/:id", deleteUser);
+// .get("/:id", checkPermission(PERMISSIONS.USER.READ), getUserById)
+// .put("/:id", checkPermission(PERMISSIONS.USER.UPDATE), updateUser)
+// .delete("/:id", checkPermission(PERMISSIONS.USER.DELETE), deleteUser);
 
 export default userRouter;

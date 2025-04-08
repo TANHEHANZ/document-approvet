@@ -5,26 +5,13 @@ import { API } from "@firma-gamc/shared";
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        ci: true,
-        role: true,
-        system: {
-          select: {
-            id: true,
-            name: true,
+      include: {
+        Role: true,
+        authMethods: {
+          omit: {
+            password: false,
           },
         },
-        state: {
-          select: {
-            status: true,
-            color: true,
-          },
-        },
-        createdAt: true,
-        updatedAt: true,
       },
     });
 

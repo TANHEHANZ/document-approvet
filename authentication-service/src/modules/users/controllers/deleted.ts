@@ -21,13 +21,7 @@ export const deleteUser = async (
     // Soft delete by updating status
     const deletedUser = await prisma.user.update({
       where: { id },
-      data: {
-        state: {
-          connect: {
-            status: "DELETED",
-          },
-        },
-      },
+      data: {},
     });
 
     API.success(res, "Usuario eliminado correctamente", deletedUser);

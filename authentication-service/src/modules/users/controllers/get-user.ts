@@ -10,24 +10,6 @@ export const getUserById = async (
       where: { id: req.params.id },
       select: {
         id: true,
-        email: true,
-        username: true,
-        ci: true,
-        role: true,
-        system: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        state: {
-          select: {
-            status: true,
-            color: true,
-          },
-        },
-        createdAt: true,
-        updatedAt: true,
       },
     });
 
