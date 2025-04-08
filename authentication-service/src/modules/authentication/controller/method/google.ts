@@ -2,10 +2,8 @@ import {
   AuthError,
   AuthErrorType,
 } from "../../../../infraestructure/types/auth.error.type";
-import { prisma } from "../../../../infraestructure/config/prisma.client";
 import { Provider, StatusEnum, User } from "@prisma/client";
-
-const VALID_STATUS: StatusEnum[] = [StatusEnum.ACTIVE, StatusEnum.EXTERNAL];
+import { createUser } from "../../../users/controllers/create";
 
 interface AuthResponse {
   user: User | null;
@@ -16,55 +14,35 @@ export const createUserByGoogle = async (
   profile: any
 ): Promise<AuthResponse> => {
   try {
-    const existingUser = await prisma.user.findUnique({
-      where: { email: profile.email },
-      include: { authMethods: true },
+    const userData = {
+      authMethod: {
+        email: profile.email,
+        google_id: profile.sub,
+        verified: true,
+        photo: profile.picture,
+      },
+      lastIp: "192.168.220.119",
+      roleId: process.env.DEFAULT_ROLE_ID,
+    };
+
+    const user = await createUser({
+      userData,
+      provider: Provider.GOOGLE,
     });
 
-    if (existingUser) {
-      if (!VALID_STATUS.includes(existingUser.Status)) {
-        return {
-          user: null,
-          error: {
-            error: AuthErrorType.ACCESS_DENIED,
-            error_description: `Account is ${existingUser.Status.toLowerCase()}. Access denied due to account status.`,
-            error_uri: "/docs/errors/account-status",
-          },
-        };
-      }
-
-      const googleAuth = existingUser.authMethods.find(
-        (auth) => auth.provider === Provider.GOOGLE
-      );
-
-      if (googleAuth) {
-        return { user: existingUser };
-      } else {
-        return {
-          user: null,
-          error: {
-            error: AuthErrorType.INVALID_AUTH_METHOD,
-            error_description:
-              "Account exists with different authentication method. Please use the original authentication method.",
-            error_uri: "/docs/errors/auth-method",
-          },
-        };
-      }
+    if (!user) {
+      return {
+        user: null,
+        error: {
+          error: AuthErrorType.INVALID_AUTH_METHOD,
+          error_description:
+            "Unable to create or find user with Google credentials",
+          error_uri: "/docs/errors/auth-method",
+        },
+      };
     }
 
-    const newUser = await prisma.user.create({
-      data: {
-        email: profile.email,
-        authMethods: {
-          create: {
-            provider: Provider.GOOGLE,
-            google_id: profile.sub,
-          },
-        },
-      },
-    });
-
-    return { user: newUser };
+    return { user };
   } catch (error) {
     console.error("Error during Google authentication:", error);
     return {
