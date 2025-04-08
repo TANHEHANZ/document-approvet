@@ -9,11 +9,6 @@ import { USER } from "./user.permissions";
 export const PERMISSIONS = {
   AUTH,
   USER,
-  DOCUMENT,
-  SYSTEM,
-  REPORT,
-  NOTIFICATION,
-  AUDIT,
 } as const;
 
 export type PermissionValue =

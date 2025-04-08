@@ -3,7 +3,6 @@ export * from "./config/prisma.errors";
 export * from "./config/status";
 
 export * from "./CONSTANTS/permissions";
-export * from "./CONSTANTS/roles";
 export * from "./CONSTANTS/HTTP";
 export * from "./CONSTANTS/EVENTS";
 
