@@ -17,21 +17,20 @@ export const UpdateRoleSchema = CreateRoleSchema.partial();
 export type CreateRoleDto = z.infer<typeof CreateRoleSchema>;
 export type UpdateRoleDto = z.infer<typeof UpdateRoleSchema>;
 
-export const AssignPermissionToRoleSchema = z.object({
+export const RolePermissionSchema = z.object({
   roleId: z.string().uuid("Invalid role ID format"),
   permissionId: z.string().uuid("Invalid permission ID format"),
 });
 
-export const AssignMultiplePermissionsSchema = z.object({
+export const AssignRolPermssSchema = z.object({
   roleId: z.string().uuid("Invalid role ID format"),
   permissionIds: z
     .array(z.string().uuid("Invalid permission ID format"))
     .min(1, "At least one permission must be provided"),
 });
 
-export type AssignPermissionToRoleDto = z.infer<
-  typeof AssignPermissionToRoleSchema
->;
+export type AssignPermissionToRoleDto = z.infer<typeof RolePermissionSchema>;
 export type AssignMultiplePermissionsDto = z.infer<
-  typeof AssignMultiplePermissionsSchema
+  typeof AssignRolPermssSchema
 >;
+export type RemovePermissionDto = z.infer<typeof RolePermissionSchema>;
