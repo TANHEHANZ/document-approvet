@@ -55,8 +55,6 @@ export const createUserByGoogle = async (
     const newUser = await prisma.user.create({
       data: {
         email: profile.email,
-        full_name: profile.name,
-        photo: profile.picture,
         authMethods: {
           create: {
             provider: Provider.GOOGLE,

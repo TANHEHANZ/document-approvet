@@ -1,72 +1,87 @@
-// import { prisma } from "../../src/infraestructure/config/prisma.client";
-// import { PERMISSIONS } from "../../src/infraestructure/CONSTANTS/permissions";
+import { PERMISSIONS } from "@firma-gamc/shared";
+import { prisma } from "../../src/infraestructure/config/prisma.client";
+import { createHash } from "crypto";
 
-// const getAllPermissions = () => {
-//   const permissions: string[] = [];
+function generatePermissionId(permissionName: string): string {
+  const hash = createHash("sha256").update(permissionName).digest("hex");
+  return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-${hash.slice(
+    12,
+    16
+  )}-${hash.slice(16, 20)}-${hash.slice(20, 32)}`;
+}
+const getAllPermissions = () => {
+  const permissions: string[] = [];
 
-//   Object.values(PERMISSIONS).forEach((domain) => {
-//     if (typeof domain === "object") {
-//       Object.values(domain).forEach((permission) => {
-//         if (typeof permission === "string") {
-//           permissions.push(permission);
-//         } else if (typeof permission === "object") {
-//           // Handle nested permissions (like AUTH.TOKEN)
-//           Object.values(permission).forEach((nestedPermission) => {
-//             if (typeof nestedPermission === "string") {
-//               permissions.push(nestedPermission);
-//             }
-//           });
-//         }
-//       });
-//     }
-//   });
+  Object.values(PERMISSIONS).forEach((domain) => {
+    if (typeof domain === "object" && domain !== null) {
+      Object.values(domain).forEach((permission) => {
+        if (typeof permission === "string") {
+          permissions.push(permission);
+        }
+      });
+    }
+  });
 
-//   return permissions;
-// };
+  return permissions;
+};
 
-// async function seedPermissions() {
-//   try {
-//     const existingPermissions = await prisma.permission.findMany();
-//     const allPermissions = getAllPermissions();
+async function seedPermissions() {
+  try {
+    const allPermissions = getAllPermissions();
+    console.log("Checking permissions...");
 
-//     if (existingPermissions.length === 0) {
-//       console.log("Seeding permissions...");
+    for (const permission of allPermissions) {
+      // Validate permission format
+      if (!permission.includes(":")) {
+        console.warn(`Skipping invalid permission format: ${permission}`);
+        continue;
+      }
 
-//       for (const permission of allPermissions) {
-//         const [domain, action, subAction] = permission.split(":");
-//         const description = subAction
-//           ? `Permission to ${action} ${subAction} in ${domain}`
-//           : `Permission to ${action} in ${domain}`;
+      const [domain, action, subAction] = permission.split(":");
+      const description = subAction
+        ? `Permission to ${action} ${subAction} in ${domain}`
+        : `Permission to ${action} in ${domain}`;
 
-//         await prisma.permission.upsert({
-//           where: { name: permission },
-//           update: {},
-//           create: {
-//             name: permission,
-//             description: description,
-//             isActive: true,
-//           },
-//         });
-//       }
-//       console.log("Permissions seeded successfully.");
-//     } else {
-//       console.log("Permissions already exist, skipping seed.");
-//     }
-//   } catch (error) {
-//     console.error("Error seeding permissions:", error);
-//     throw error;
-//   }
-// }
+      const permissionId = generatePermissionId(permission);
 
-// if (require.main === module) {
-//   seedPermissions()
-//     .catch((e) => {
-//       console.error(e);
-//       process.exit(1);
-//     })
-//     .finally(async () => {
-//       await prisma.$disconnect();
-//     });
-// }
+      await prisma.permissons.upsert({
+        where: {
+          id: permissionId,
+          name: permission,
+        },
+        update: {
+          description: description,
+          isActive: true,
+        },
+        create: {
+          id: permissionId,
+          name: permission,
+          description: description,
+          isActive: true,
+        },
+      });
+    }
 
-// export { seedPermissions };
+    // Optional: Clean up removed permissions
+    const existingPermissions = await prisma.permissons.findMany();
+    const validPermissionIds = allPermissions.map((p) =>
+      generatePermissionId(p)
+    );
+
+    for (const existingPerm of existingPermissions) {
+      if (!validPermissionIds.includes(existingPerm.id)) {
+        await prisma.permissons.update({
+          where: { id: existingPerm.id },
+          data: { isActive: false },
+        });
+      }
+    }
+
+    console.log("Permissions synchronized successfully.");
+  } catch (error) {
+    console.error("Error seeding permissions:", error);
+    throw error;
+  }
+}
+
+export { seedPermissions };

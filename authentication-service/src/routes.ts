@@ -1,10 +1,7 @@
 import { Router } from "express";
-import userRouter from "./modules/users/user.router";
-import permssRouter from "./modules/permission/permission.routes";
-import { authMiddleware } from "./infraestructure/midlweware/authentication";
-import authRouter from "./modules/authentication/routes.auth";
+import rolRouter from "./modules/roles/roles.router";
 
 const auth = Router();
-auth.use("/auth", authRouter);
+auth.use("/rol", rolRouter);
 
 export default auth;

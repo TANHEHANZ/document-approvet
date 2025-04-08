@@ -86,6 +86,7 @@ model Permissons {
   name           String           @unique
   description    String?
   RolePermission RolePermission[]
+  isActive       Boolean
 
   @@index([name], name: "idx_permissons_name")
   @@map("permissons")
