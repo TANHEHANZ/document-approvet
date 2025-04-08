@@ -3,7 +3,7 @@ import cors from "cors";
 import auth from "./routes";
 import cookieParser from "cookie-parser";
 import passport from "passport";
-import { configureGoogleStrategy } from "./infraestructure/config/google";
+import { configureGoogleStrategy } from "./modules/authentication/controller/method/google";
 
 export const createServer = () => {
   const app = express();
