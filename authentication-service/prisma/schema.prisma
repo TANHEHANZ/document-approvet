@@ -36,11 +36,7 @@ enum StatusEnum {
 model User {
   id          String        @id @default(uuid())
   email       String?       @unique
-  full_name   String?
-  cel         String?
-  ci          String?       @unique
   lastIp      String?
-  photo       String?
   statusId    String?
   Status      StatusEnum    @default(ACTIVE)
   authMethods AuthMethods[]
@@ -61,7 +57,11 @@ model AuthMethods {
   password   String?
   google_id  String?  @unique
   ci_number  String?  @unique
+  phone      String?
+  photo      String?
+  email      String?
   extra_data Json?
+  verified   Boolean  @default(false)
   user       User     @relation(fields: [userId], references: [id])
   created_at DateTime @default(now())
 
@@ -74,6 +74,7 @@ model Role {
   name           String           @unique
   users          User[]
   RolePermission RolePermission[]
+  ScopeRol       ScopeRol[]
 
   @@index([name], name: "idx_roles_name")
   @@map("roles")
@@ -100,5 +101,60 @@ model RolePermission {
 
   @@id([roleId, permissionId])
   @@map("role_permissions")
+  @@schema("auth")
+}
+
+model OAuthClient {
+  id            String   @id @default(uuid())
+  client_id     String   @unique
+  client_secret String
+  name          String
+  description   String?
+  redirect_uris String[]
+  webhook_url   String?
+  status        String   @default("ACTIVE")
+  domain        String?
+
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+  scopeId    String
+  scopes     ClientScope[]
+
+  @@map("oauth_clients")
+  @@schema("auth")
+}
+
+model ClientScope {
+  id         String      @id @default(uuid())
+  clientId   String
+  scopeId    String
+  client     OAuthClient @relation(fields: [clientId], references: [id])
+  scope      Scope       @relation(fields: [scopeId], references: [id])
+  created_at DateTime    @default(now())
+
+  @@unique([clientId, scopeId])
+  @@map("client_scopes")
+  @@schema("auth")
+}
+
+model Scope {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  description String?
+  clients     ClientScope[]
+
+  ScopeRol ScopeRol[]
+
+  @@schema("auth")
+}
+
+model ScopeRol {
+  id      String @id @default(uuid())
+  scopeId String
+  socope  Scope  @relation(fields: [scopeId], references: [id])
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
   @@schema("auth")
 }
