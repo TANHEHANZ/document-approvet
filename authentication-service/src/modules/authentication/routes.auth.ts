@@ -1,42 +1,31 @@
 import { Router } from "express";
 import passport from "passport";
-import { handleAuthResponse } from "../../infraestructure/midlweware/auth.response";
-// import { validateClient } from "../../infraestructure/midlweware/client.validator";
+import { checkPermission } from "../../infraestructure/midlweware/check-permission";
+import { PERMISSIONS } from "@firma-gamc/shared";
+import { getIp } from "../../infraestructure/helpers/getIp";
 
 const authRouter = Router();
 
 authRouter.get(
   "/google",
-  // validateClient,
+  checkPermission(PERMISSIONS.AUTH.LOGIN_GOOGLE),
   (req, res, next) => {
-    const { client_id, redirect_uri, state } = req.query;
-
+    const ip = getIp(req);
     passport.authenticate("google", {
       scope: ["profile", "email"],
       session: false,
-      state: JSON.stringify({ client_id, redirect_uri, state }),
+      state: JSON.stringify({ ip: ip }),
     })(req, res, next);
   }
 );
 
 authRouter.get(
   "/google/callback",
-  passport.authenticate("google", { session: false })
-  // async (req, res, next) => {
-  //   const { state } = req.query;
-  //   const { client_id, redirect_uri } = JSON.parse(state as string);
-
-  //   const client = await prisma.oAuthClient.findUnique({
-  //     where: { client_id: client_id as string }
-  //   });
-
-  //   if (!client || !client.redirect_uris.includes(redirect_uri as string)) {
-  //     return res.redirect(`/auth/error?error=invalid_client`);
-  //   }
-
-  //   handleAuthResponse(
-  //     redirect_uri as string,
-  //     `${redirect_uri}/error`
-  //   )(req, res, next);
-  // }
+  checkPermission(PERMISSIONS.AUTH.LOGIN_GOOGLE),
+  passport.authenticate("google", { session: false }),
+  async (req, res, next) => {
+    const state = JSON.parse(req.query.state as string);
+    console.log("Original IP from state:", state.ip);
+  }
 );
+export default authRouter;

@@ -3,13 +3,11 @@ import cors from "cors";
 import auth from "./routes";
 import cookieParser from "cookie-parser";
 import passport from "passport";
-import { configureGoogleStrategy } from "./modules/authentication/controller/method/google";
+import { configureGoogleStrategy } from "./modules/authentication/controller/provider/googleStrategy";
 
 export const createServer = () => {
-  const app = express();
-
   configureGoogleStrategy();
-
+  const app = express();
   app
     .disable("x-powered-by")
     .use(express.urlencoded({ extended: true }))

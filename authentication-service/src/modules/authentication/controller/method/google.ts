@@ -2,8 +2,8 @@ import {
   AuthError,
   AuthErrorType,
 } from "../../../../infraestructure/types/auth.error.type";
-import { Provider, StatusEnum, User } from "@prisma/client";
-import { createUser } from "../../../users/controllers/create";
+import { Provider, User } from "@prisma/client";
+import { createUser, PropCreate } from "../../../users/controllers/create";
 
 interface AuthResponse {
   user: User | null;
@@ -14,21 +14,22 @@ export const createUserByGoogle = async (
   profile: any
 ): Promise<AuthResponse> => {
   try {
-    const userData = {
-      authMethod: {
-        email: profile.email,
-        google_id: profile.sub,
-        verified: true,
-        photo: profile.picture,
+    const userData: PropCreate = {
+      provider: Provider.GOOGLE,
+      userData: {
+        lastIp: profile.ip,
+        authMethod: {
+          email: profile.email,
+          google_id: profile.sub,
+          verified: true,
+          photo: profile.picture,
+          extra_data: profile,
+          provider: Provider.GOOGLE,
+        },
       },
-      lastIp: "192.168.220.119",
-      roleId: process.env.DEFAULT_ROLE_ID,
     };
 
-    const user = await createUser({
-      userData,
-      provider: Provider.GOOGLE,
-    });
+    const user = await createUser(userData);
 
     if (!user) {
       return {

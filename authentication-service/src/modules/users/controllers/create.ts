@@ -3,7 +3,7 @@ import { hashPassword } from "../../../infraestructure/helpers/bycript";
 import { CreateUserDto } from "../../../infraestructure/models/user.dto";
 import { Provider, StatusEnum, User } from "@prisma/client";
 
-interface PropCreate {
+export interface PropCreate {
   userData: CreateUserDto;
   provider: Provider;
 }
@@ -16,6 +16,7 @@ export const createUser = async ({
   provider,
 }: PropCreate): Promise<User | null> => {
   try {
+    console.log(provider);
     const existingUser = await prisma.user.findFirst({
       where: {
         authMethods: {
@@ -57,6 +58,8 @@ export const createUser = async ({
       }
       return existingUser;
     }
+    console.log(existingUser);
+
     const userWithEmail = await prisma.user.findFirst({
       where: {
         authMethods: {
