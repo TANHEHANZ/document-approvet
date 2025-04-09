@@ -5,14 +5,6 @@ declare global {
         data: ScopeDTO[];
         ttl: 3600;
       };
-      "user/profile": {
-        data: UserDTO;
-        ttl: 1800;
-      };
-      "auth/token": {
-        data: TokenDTO;
-        ttl: 300;
-      };
     }
 
     type CacheKeys = keyof CacheModules;
