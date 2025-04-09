@@ -6,7 +6,7 @@
     "seed": "ts-node prisma/seeder/index.ts"
   },
   "scripts": {
-    "dev": "ts-node-dev --respawn src/app.ts",
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
     "db:seed": "npx prisma db seed",

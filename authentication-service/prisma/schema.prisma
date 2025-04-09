@@ -80,7 +80,6 @@ model Role {
   name           String           @unique
   users          User[]
   RolePermission RolePermission[]
-  ScopeRol       ScopeRol[]
 
   @@index([name], name: "idx_roles_name")
   @@map("roles")
@@ -88,11 +87,12 @@ model Role {
 }
 
 model Permissons {
-  id             String           @id @default(uuid())
-  name           String           @unique
+  id             String            @id @default(uuid())
+  name           String            @unique
   description    String?
   RolePermission RolePermission[]
   isActive       Boolean
+  ScopeRol       ScopePermission[]
 
   @@index([name], name: "idx_permissons_name")
   @@map("permissons")
@@ -122,46 +122,35 @@ model OAuthClient {
   status        String   @default("ACTIVE")
   domain        String?
 
-  created_at DateTime      @default(now())
-  updated_at DateTime      @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
   scopeId    String
-  scopes     ClientScope[]
+
+  scoperolId      String
+  scopePermission ScopePermission @relation(fields: [scoperolId], references: [id])
 
   @@map("oauth_clients")
   @@schema("auth")
 }
 
-model ClientScope {
-  id         String      @id @default(uuid())
-  clientId   String
-  scopeId    String
-  client     OAuthClient @relation(fields: [clientId], references: [id])
-  scope      Scope       @relation(fields: [scopeId], references: [id])
-  created_at DateTime    @default(now())
-
-  @@unique([clientId, scopeId])
-  @@map("client_scopes")
-  @@schema("auth")
-}
-
 model Scope {
-  id          String        @id @default(uuid())
-  name        String        @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   description String?
-  clients     ClientScope[]
 
-  ScopeRol ScopeRol[]
+  ScopeRol ScopePermission[]
 
   @@schema("auth")
 }
 
-model ScopeRol {
+model ScopePermission {
   id      String @id @default(uuid())
   scopeId String
   socope  Scope  @relation(fields: [scopeId], references: [id])
 
-  roleId String
-  role   Role   @relation(fields: [roleId], references: [id])
+  permissionId String
+  permission   Permissons    @relation(fields: [permissionId], references: [id])
+  OAuthClient  OAuthClient[]
 
   @@schema("auth")
 }

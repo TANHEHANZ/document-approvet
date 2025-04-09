@@ -1,14 +1,14 @@
 import { seedPermissions } from "./permissions.seeder";
-// import { seedStatuses } from "./status.seeder";
 import { prisma } from "../../src/infraestructure/config/prisma.client";
-// import { seedUserTypes } from "./userType.seeder";
+import { seedScopes } from "./scoope.seeder";
+import { seedScopePermissions } from "./scope-permission.seeder";
 
 async function main() {
   try {
     console.log("Starting database seeding...");
-    // await seedUserTypes();
-    // await seedStatuses();
+    await seedScopes();
     await seedPermissions();
+    await seedScopePermissions();
 
     console.log("All seeds completed successfully!");
   } catch (error) {

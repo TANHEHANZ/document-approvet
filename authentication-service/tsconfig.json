@@ -1,4 +1,7 @@
 {
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",
@@ -8,14 +11,27 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "../../",
+    "baseUrl": "./src",
+    "typeRoots": [
+      "./src/infraestructure/lib/redis/types",
+      "./node_modules/@types"
+    ],
     "paths": {
-      "@shared/*": ["shared/*"],
-      "@/*": ["microservices/authentication-service/src/*"]
+      "@shared/*": ["../../shared/*"],
+      "@/*": ["./*"],
+      "@types/*": ["infraestructure/lib/redis/types/*"],
+      "@lib/*": ["infraestructure/lib/*"],
+      "@infraestructure/*": ["infraestructure/*"],
+      "@modules/*": ["modules/*"]
     },
     "moduleResolution": "node",
     "resolveJsonModule": true
   },
+  "files": [
+    "src/infraestructure/lib/redis/types/config.d.ts",
+    "src/infraestructure/lib/redis/types/store.d.ts",
+    "src/infraestructure/lib/redis/types/caching.d.ts"
+  ],
   "include": ["./src/**/*", "../../shared/**/*", "prisma/seeder"],
   "exclude": ["node_modules", "dist"]
 }
