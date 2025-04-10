@@ -2,7 +2,15 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import passport from "passport";
 import config from "../../../../infraestructure/config/config";
 import { Profile } from "passport-google-oauth20";
-import { createUserByGoogle } from "../method/google";
+import { validateUser, ValidationResult } from "../validation/validated";
+import { Provider } from "@prisma/client";
+import { AuthErrorHandler } from "../validation/authErrorHandler";
+
+export interface reponseGoogle {
+  profile: Profile | null;
+  validation: ValidationResult;
+}
+
 export const configureGoogleStrategy = () => {
   passport.use(
     new GoogleStrategy(
@@ -15,15 +23,19 @@ export const configureGoogleStrategy = () => {
       },
       async (req, accessToken, refreshToken, profile: Profile, done) => {
         try {
-          //   const state = req.query.state
-          //     ? JSON.parse(req.query.state as string)
-          //     : {};
-          //   console.log("IP from state:", state.ip);
-          //   const user = await createUserByGoogle({
-          //     ...profile._json,
-          //     ip: state.ip,
-          //   });
-          return done(null, profile);
+          const validation = await validateUser(profile, Provider.GOOGLE);
+          const error = AuthErrorHandler.handleValidationError(validation);
+
+          if (error) {
+            return done(error, false);
+          }
+
+          const response = {
+            profile: validation.user,
+            validation,
+          } as reponseGoogle;
+
+          return done(null, response);
         } catch (error) {
           console.error("Error during Google authentication", error);
           return done(error, undefined);

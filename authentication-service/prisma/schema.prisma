@@ -52,15 +52,17 @@ model User {
 }
 
 model AuthMethods {
-  id         String   @id @default(uuid())
-  userId     String   @unique
-  provider   Provider
-  password   String?
-  google_id  String?  @unique
-  ci_number  String?  @unique
-  phone      String?
-  photo      String?
-  email      String?
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  provider  Provider
+  password  String?
+  google_id String?    @unique
+  ci_number String?    @unique
+  phone     String?
+  photo     String?
+  email     String?
+  Status    StatusEnum @default(DEACTIVATED)
+
   extra_data Json?
   verified   Boolean  @default(false)
   user       User     @relation(fields: [userId], references: [id])
@@ -112,19 +114,19 @@ model RolePermission {
 }
 
 model OAuthClient {
-  id            String   @id @default(uuid())
-  client_id     String   @unique
+  id            String     @id @default(uuid())
+  client_id     String     @unique
   client_secret String
   name          String
   description   String?
   redirect_uris String[]
   webhook_url   String?
-  status        String   @default("ACTIVE")
+  status        String     @default("ACTIVE")
   domain        String?
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  scopeId    String
+  Status        StatusEnum @default(DEACTIVATED)
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+  scopeId       String
 
   scoperolId      String
   scopePermission ScopePermission @relation(fields: [scoperolId], references: [id])
@@ -134,9 +136,10 @@ model OAuthClient {
 }
 
 model Scope {
-  id          String  @id @default(uuid())
-  name        String  @unique
+  id          String     @id @default(uuid())
+  name        String     @unique
   description String?
+  Status      StatusEnum @default(ACTIVE)
 
   ScopeRol ScopePermission[]
 
