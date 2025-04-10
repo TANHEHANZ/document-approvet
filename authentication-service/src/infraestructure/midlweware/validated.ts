@@ -4,10 +4,11 @@ import { ZodError, ZodSchema } from "zod";
 import { fromError } from "zod-validation-error";
 
 export const validate =
-  (schema: ZodSchema<any>) =>
+  (schema: ZodSchema<any>, type: "body" | "query" = "body") =>
   (req: Request, res: Response, next: NextFunction): void => {
     try {
-      schema.parse(req.body);
+      const dataToValidate = type === "body" ? req.body : req.query;
+      schema.parse(dataToValidate);
       next();
     } catch (error) {
       if (error instanceof ZodError) {

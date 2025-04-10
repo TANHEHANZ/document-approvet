@@ -28,5 +28,48 @@ export const OAuthClientResponseSchema = z.object({
   scopeId: z.string().uuid(),
 });
 
+export const QueryParamsOAuthClient = z
+  .object({
+    name: z
+      .string()
+      .optional()
+      .transform((val) => val || undefined),
+    status: z
+      .enum(["ACTIVE", "INACTIVE", "DEACTIVATED"])
+      .optional()
+      .transform((val) => {
+        if (!val) return undefined;
+        return ["ACTIVE", "INACTIVE", "DEACTIVATED"].includes(val)
+          ? val
+          : undefined;
+      }),
+    domain: z
+      .string()
+      .optional()
+      .transform((val) => val || undefined),
+    client_id: z
+      .string()
+      .optional()
+      .transform((val) => val || undefined),
+    createdAt: z
+      .object({
+        from: z.string().datetime().optional(),
+        to: z.string().datetime().optional(),
+      })
+      .optional()
+      .transform((val) => {
+        if (!val?.from && !val?.to) return undefined;
+        return {
+          from: val?.from ? new Date(val.from) : undefined,
+          to: val?.to ? new Date(val.to) : undefined,
+        };
+      }),
+  })
+  .strict();
+
 export type CreateOAuthClientDto = z.infer<typeof CreateOAuthClientSchema>;
 export type OAuthClientResponseDto = z.infer<typeof OAuthClientResponseSchema>;
+
+//  filter params
+
+export type QueryParamsOAuthClientDTO = z.infer<typeof QueryParamsOAuthClient>;
