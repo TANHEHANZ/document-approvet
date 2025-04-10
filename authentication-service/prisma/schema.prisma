@@ -115,8 +115,8 @@ model RolePermission {
 
 model OAuthClient {
   id               String                       @id @default(uuid())
-  client_id        String                       @unique
-  client_secret    String
+  client_id        String?                      @unique
+  client_secret    String?
   name             String
   description      String?
   redirect_uris    String[]

@@ -1,7 +1,5 @@
 import { API } from "@shared/index";
 import { Request, Response } from "express";
-import { CreateOAuthClientDto } from "@/infraestructure/models/OAuthClient";
-import { randomUUID } from "crypto";
 import { prisma } from "@/infraestructure/config/prisma.client";
 import { StatusEnum } from "@prisma/client";
 export const createClientOAuth = async (
@@ -49,18 +47,9 @@ export const createClientOAuth = async (
       API.badRequest(res, `No permissions found for the provided scopes`);
       return;
     }
-
-    const clientData: CreateOAuthClientDto = {
-      ...restClientData,
-      redirect_uris: Array.isArray(restClientData.redirect_uris)
-        ? restClientData.redirect_uris
-        : [restClientData.redirect_uris],
-    };
     const client = await prisma.oAuthClient.create({
       data: {
         ...restClientData,
-        client_id: `client_${randomUUID()}`,
-        client_secret: randomUUID(),
         Status: StatusEnum.ACTIVE,
         scopePermissions: {
           create: scopePermissions.map((sp) => ({
