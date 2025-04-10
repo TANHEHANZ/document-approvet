@@ -17,10 +17,10 @@ export const assignRole = async (
       return;
     }
     const permissions = await prisma.permissons.findMany({
-      where: { id: { in: data.permissionIds } },
+      where: { AND: [{ id: { in: data.permissionIds } }, { isActive: true }] },
     });
     if (permissions.length !== data.permissionIds.length) {
-      API.badRequest(res, "One or more permissions not found");
+      API.badRequest(res, "One or more permissions not found or are inactive");
       return;
     }
     const assignedPermissions = await prisma.$transaction(

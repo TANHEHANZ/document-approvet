@@ -6,7 +6,11 @@ export const allPermissions = async (
   res: Response
 ): Promise<void> => {
   try {
-    const permission = await prisma.permissons.findMany();
+    const permission = await prisma.permissons.findMany({
+      where: {
+        isActive: true,
+      },
+    });
     API.success(res, "Permission retrive successfully", permission);
   } catch (error) {
     API.serverError(res, "Error internal server", error);
