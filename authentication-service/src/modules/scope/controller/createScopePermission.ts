@@ -8,6 +8,16 @@ export const scopeCreate = async (
 ): Promise<void> => {
   try {
     const { name, description, permissions } = req.body;
+
+    const existingScope = await prisma.scope.findUnique({
+      where: { name },
+    });
+
+    if (existingScope) {
+      API.conflict(res, "Scope name already exists", null);
+      return;
+    }
+
     const result = await prisma.$transaction(async (tx) => {
       const scope = await tx.scope.create({
         data: {
