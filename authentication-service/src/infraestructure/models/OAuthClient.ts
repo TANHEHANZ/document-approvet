@@ -8,7 +8,9 @@ export const CreateOAuthClientSchema = z.object({
     .min(1, "At least one redirect URI is required"),
   webhook_url: z.string().url("Invalid webhook URL").optional(),
   domain: z.string().optional(),
-  scopeId: z.string().uuid("Invalid scope ID"),
+  scopeId: z
+    .array(z.string().uuid("Invalid scope ID"))
+    .min(1, "At least one scope is required"),
 });
 
 export const OAuthClientResponseSchema = z.object({

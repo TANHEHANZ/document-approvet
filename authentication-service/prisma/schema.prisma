@@ -114,22 +114,18 @@ model RolePermission {
 }
 
 model OAuthClient {
-  id            String     @id @default(uuid())
-  client_id     String     @unique
-  client_secret String
-  name          String
-  description   String?
-  redirect_uris String[]
-  webhook_url   String?
-  status        String     @default("ACTIVE")
-  domain        String?
-  Status        StatusEnum @default(DEACTIVATED)
-  created_at    DateTime   @default(now())
-  updated_at    DateTime   @updatedAt
-  scopeId       String
-
-  scoperolId      String
-  scopePermission ScopePermission @relation(fields: [scoperolId], references: [id])
+  id               String                       @id @default(uuid())
+  client_id        String                       @unique
+  client_secret    String
+  name             String
+  description      String?
+  redirect_uris    String[]
+  webhook_url      String?
+  domain           String?
+  Status           StatusEnum                   @default(DEACTIVATED)
+  created_at       DateTime                     @default(now())
+  updated_at       DateTime?                    @updatedAt
+  scopePermissions OAuthClientScopePermission[]
 
   @@map("oauth_clients")
   @@schema("auth")
@@ -146,14 +142,27 @@ model Scope {
   @@schema("auth")
 }
 
+model OAuthClientScopePermission {
+  clientId          String
+  scopePermissionId String
+
+  client          OAuthClient     @relation(fields: [clientId], references: [id])
+  scopePermission ScopePermission @relation(fields: [scopePermissionId], references: [id])
+
+  @@id([clientId, scopePermissionId])
+  @@map("oauth_client_scope_permissions")
+  @@schema("auth")
+}
+
 model ScopePermission {
   id      String @id @default(uuid())
   scopeId String
-  socope  Scope  @relation(fields: [scopeId], references: [id])
+  scope   Scope  @relation(fields: [scopeId], references: [id])
 
   permissionId String
-  permission   Permissons    @relation(fields: [permissionId], references: [id])
-  OAuthClient  OAuthClient[]
+  permission   Permissons @relation(fields: [permissionId], references: [id])
+
+  oauthClients OAuthClientScopePermission[]
 
   @@schema("auth")
 }
