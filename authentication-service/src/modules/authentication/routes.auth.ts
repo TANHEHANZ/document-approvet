@@ -1,14 +1,14 @@
 import { Router } from "express";
 import passport from "passport";
-import { checkPermission } from "../../infraestructure/midlweware/check-permission";
-import { API, PERMISSIONS } from "@firma-gamc/shared";
 import { getIp } from "../../infraestructure/helpers/getIp";
-import { formatUser } from "./controller/method/google";
-import { ValidationResult } from "./controller/validation/validated";
-import { reponseGoogle } from "./controller/provider/googleStrategy";
+import { manageCallback } from "./controller/callback/callback.google";
+import { authCi } from "./controller/method/ci";
+import { validate } from "@/infraestructure/midlweware/validated";
+import { authSchema } from "@/infraestructure/models/auth.dto";
+import { authCredential } from "./controller/method/credentials";
 
 const authRouter = Router();
-
+//  debemos manejar el query de los vatos del cliente segun OAuth02
 authRouter.get("/google", (req, res, next) => {
   const ip = getIp(req);
   passport.authenticate("google", {
@@ -21,20 +21,8 @@ authRouter.get("/google", (req, res, next) => {
 authRouter.get(
   "/google/callback",
   passport.authenticate("google", { session: false }),
-  async (req, res, next) => {
-    const { profile, validation } = req.user as reponseGoogle;
-    const state = JSON.parse(req.query.state as string);
-    if (
-      !validation.exists &&
-      !validation.isActive &&
-      !validation.isMethodActive
-    ) {
-      const newUser = await formatUser({ ...profile?._json, ip: state.ip });
-      API.success(res, "Inico de secion correcto ", newUser);
-    }
-    if (validation.exists) {
-      API.success(res, "Usuario ya existente ", validation.user);
-    }
-  }
+  manageCallback
 );
+authRouter.post("/ci", validate(authSchema), authCi);
+authRouter.post("/credential", validate(authSchema), authCredential);
 export default authRouter;

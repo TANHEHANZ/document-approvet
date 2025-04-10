@@ -2,9 +2,9 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import passport from "passport";
 import config from "../../../../infraestructure/config/config";
 import { Profile } from "passport-google-oauth20";
-import { validateUser, ValidationResult } from "../validation/validated";
+import { validateUser, ValidationResult } from "../helper/validated";
 import { Provider } from "@prisma/client";
-import { AuthErrorHandler } from "../validation/authErrorHandler";
+import { handleValidationError } from "../helper/authErrorHandler";
 
 export interface reponseGoogle {
   profile: Profile | null;
@@ -24,7 +24,7 @@ export const configureGoogleStrategy = () => {
       async (req, accessToken, refreshToken, profile: Profile, done) => {
         try {
           const validation = await validateUser(profile, Provider.GOOGLE);
-          const error = AuthErrorHandler.handleValidationError(validation);
+          const error = handleValidationError(validation);
 
           if (error) {
             return done(error, false);
