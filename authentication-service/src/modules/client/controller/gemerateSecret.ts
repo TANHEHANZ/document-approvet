@@ -12,9 +12,15 @@ export const generateSecretClient = async (
       API.badRequest(res, "error no se proveyo el id del cliente");
       return;
     }
+    const existingClient = await prisma.oAuthClient.findUnique({
+      where: { id: idClient },
+    });
 
+    if (!existingClient) {
+      API.notFound(res, "Cliente no encontrado");
+      return;
+    }
     const credentials = await generateClientCredentials();
-
     const asiggnCredential = await prisma.oAuthClient.update({
       where: {
         id: idClient,
