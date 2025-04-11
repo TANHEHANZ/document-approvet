@@ -33,13 +33,22 @@ export const authClient = async (
       API.unauthorized(res, "Invalid client credentials");
       return;
     }
-    const token = await generateSecureToken({ client_id, scopes: [] });
-    console.log("Token generated:", token ? "success" : "failed");
+    const access_token = await generateSecureToken({
+      client_id,
+      scopes: [],
+      expiresIn: "15m",
+    });
+    const refresh_token = await generateSecureToken({
+      client_id,
+      scopes: [],
+      expiresIn: "30d",
+    });
 
     API.success(res, "Client authenticated", {
-      access_token: token,
+      access_token: access_token,
+      refresh_token: refresh_token,
       token_type: "Bearer",
-      expires_in: 3600,
+      expires_in: 60,
     });
   } catch (error) {}
 };

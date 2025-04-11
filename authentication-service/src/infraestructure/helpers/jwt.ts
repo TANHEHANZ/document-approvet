@@ -16,6 +16,7 @@ const MASTER_PUBLIC_KEY = createPublicKey(
 export const generateSecureToken = async (clientData: {
   client_id: string;
   scopes?: string[];
+  expiresIn?: any;
 }) => {
   try {
     const payload = {
@@ -35,7 +36,7 @@ export const generateSecureToken = async (clientData: {
 
     const token = jwt.sign({ data: encryptedPayload }, randomBytes(32), {
       algorithm: "HS256",
-      expiresIn: "1h",
+      expiresIn: clientData.expiresIn || "1h",
     });
 
     return token;

@@ -20,6 +20,7 @@ export const verificacionJWT = async (
       client_id: payload.client_id,
       scopes: payload.scopes,
       type: payload.type,
+      exp: payload.exp,
     });
   } catch (error) {
     console.error("Token verification failed:", error);
