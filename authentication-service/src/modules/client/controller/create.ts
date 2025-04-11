@@ -15,6 +15,7 @@ export const createClientOAuth = async (
         name: restClientData.name,
       },
     });
+
     if (existingClient) {
       API.conflict(
         res,
@@ -22,6 +23,7 @@ export const createClientOAuth = async (
       );
       return;
     }
+
     const existingScopes = await prisma.scope.findMany({
       where: {
         id: {
@@ -35,35 +37,22 @@ export const createClientOAuth = async (
       return;
     }
 
-    const scopePermissions = await prisma.scopePermission.findMany({
-      where: {
-        scopeId: {
-          in: scopeId,
-        },
-      },
-    });
-
-    if (!scopePermissions.length) {
-      API.badRequest(res, `No permissions found for the provided scopes`);
-      return;
-    }
     const client = await prisma.oAuthClient.create({
       data: {
         ...restClientData,
         Status: StatusEnum.ACTIVE,
-        scopePermissions: {
-          create: scopePermissions.map((sp) => ({
-            scopePermissionId: sp.id,
+        oAuthClientScopePermission: {
+          create: scopeId.map((scopeId: any) => ({
+            scopeId,
           })),
         },
       },
       include: {
-        scopePermissions: {
+        oAuthClientScopePermission: {
           include: {
-            scopePermission: {
-              include: {
-                permission: true,
-                scope: true,
+            scope: {
+              select: {
+                name: true,
               },
             },
           },
@@ -76,10 +65,7 @@ export const createClientOAuth = async (
       client_secret: client.client_secret,
       name: client.name,
       redirect_uris: client.redirect_uris,
-      scopes: client.scopePermissions.map((sp) => ({
-        scope: sp.scopePermission.scope.name,
-        permission: sp.scopePermission.permission.name,
-      })),
+      scopes: client.oAuthClientScopePermission.map((sp) => sp.scope.name),
     });
   } catch (error) {
     console.error("OAuth Client Creation Error:", error);

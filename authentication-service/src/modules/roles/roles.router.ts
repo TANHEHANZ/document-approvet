@@ -12,9 +12,10 @@ import { removeRolePermissions } from "./controller/remove-assign-role";
 import { allPermissions } from "./controller/allPermissions";
 import { checkPermission } from "@/infraestructure/midlweware/check-permission";
 import { PERMISSIONS } from "@shared/index";
+import { authMiddleware } from "@/infraestructure/midlweware/authentication";
 
 const rolRouter = Router();
-
+rolRouter.use(authMiddleware);
 rolRouter.post(
   "/",
   validate(CreateRoleSchema),

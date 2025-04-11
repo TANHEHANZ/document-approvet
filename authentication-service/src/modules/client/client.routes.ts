@@ -21,7 +21,7 @@ clientRoute
   )
   .get(
     "/",
-    checkPermission(PERMISSIONS.CLIENT.READ),
+
     validate(QueryParamsOAuthClient, "query"),
     getAllClient
   )

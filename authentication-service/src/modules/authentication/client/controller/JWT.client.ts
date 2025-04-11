@@ -18,13 +18,27 @@ export const authClient = async (
       select: {
         client_secret: true,
         client_id: true,
+        oAuthClientScopePermission: {
+          select: {
+            scope: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
+    console.log(JSON.stringify(client, null, 2));
     if (!client) {
       API.unauthorized(res, "Invalid client credentials");
       return;
     }
+    const scopes = [
+      ...new Set(client.oAuthClientScopePermission.map((sp) => sp.scope.name)),
+    ];
+    console.log(scopes);
     const validatedCredentials = await validateClientCredentials(
       client_secret,
       client.client_secret!
@@ -35,12 +49,12 @@ export const authClient = async (
     }
     const access_token = await generateSecureToken({
       client_id,
-      scopes: [],
+      scopes: scopes,
       expiresIn: "15m",
     });
     const refresh_token = await generateSecureToken({
       client_id,
-      scopes: [],
+      scopes: scopes,
       expiresIn: "30d",
     });
 

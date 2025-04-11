@@ -9,14 +9,11 @@ const MASTER_PRIVATE_KEY = createPrivateKey(
 
 export const decryptToken = async (token: string) => {
   try {
-    // Primero solo decodificamos para obtener el payload encriptado
     const decoded = jwt.decode(token, { complete: true });
 
     if (!decoded || !decoded.payload || !(decoded.payload as any).data) {
       throw new Error("Invalid token format");
     }
-
-    // Desencriptamos el payload usando RSA
     const decryptedPayload = privateDecrypt(
       {
         key: MASTER_PRIVATE_KEY,
@@ -26,10 +23,8 @@ export const decryptToken = async (token: string) => {
       Buffer.from((decoded.payload as any).data, "base64")
     );
 
-    // Parseamos el payload original
     const payload = JSON.parse(decryptedPayload.toString());
 
-    // Verificamos si el token ha expirado
     const exp = (decoded.payload as any).exp;
     if (exp && Date.now() >= exp * 1000) {
       throw new TokenExpiredError("Token expired", new Date(exp * 1000));

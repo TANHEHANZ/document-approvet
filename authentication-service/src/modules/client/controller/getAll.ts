@@ -25,12 +25,11 @@ export const getAllClient = async (
             : undefined,
       },
       include: {
-        scopePermissions: {
+        oAuthClientScopePermission: {
           include: {
-            scopePermission: {
-              include: {
-                permission: true,
-                scope: true,
+            scope: {
+              select: {
+                name: true,
               },
             },
           },

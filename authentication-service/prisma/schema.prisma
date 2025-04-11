@@ -114,18 +114,18 @@ model RolePermission {
 }
 
 model OAuthClient {
-  id               String                       @id @default(uuid())
-  client_id        String?                      @unique
-  client_secret    String?
-  name             String
-  description      String?
-  redirect_uris    String[]
-  webhook_url      String?
-  domain           String?
-  Status           StatusEnum                   @default(DEACTIVATED)
-  created_at       DateTime                     @default(now())
-  updated_at       DateTime?                    @updatedAt
-  scopePermissions OAuthClientScopePermission[]
+  id                         String                       @id @default(uuid())
+  client_id                  String?                      @unique
+  client_secret              String?
+  name                       String
+  description                String?
+  redirect_uris              String[]
+  webhook_url                String?
+  domain                     String?
+  Status                     StatusEnum                   @default(DEACTIVATED)
+  created_at                 DateTime                     @default(now())
+  updated_at                 DateTime?                    @updatedAt
+  oAuthClientScopePermission OAuthClientScopePermission[]
 
   @@map("oauth_clients")
   @@schema("auth")
@@ -137,19 +137,20 @@ model Scope {
   description String?
   Status      StatusEnum @default(ACTIVE)
 
-  ScopeRol ScopePermission[]
+  ScopeRol                   ScopePermission[]
+  OAuthClientScopePermission OAuthClientScopePermission[]
 
   @@schema("auth")
 }
 
 model OAuthClientScopePermission {
-  clientId          String
-  scopePermissionId String
+  clientId String
+  scopeId  String
 
-  client          OAuthClient     @relation(fields: [clientId], references: [id])
-  scopePermission ScopePermission @relation(fields: [scopePermissionId], references: [id])
+  client OAuthClient @relation(fields: [clientId], references: [id])
+  scope  Scope       @relation(fields: [scopeId], references: [id])
 
-  @@id([clientId, scopePermissionId])
+  @@id([clientId, scopeId])
   @@map("oauth_client_scope_permissions")
   @@schema("auth")
 }
@@ -161,8 +162,6 @@ model ScopePermission {
 
   permissionId String
   permission   Permissons @relation(fields: [permissionId], references: [id])
-
-  oauthClients OAuthClientScopePermission[]
 
   @@schema("auth")
 }

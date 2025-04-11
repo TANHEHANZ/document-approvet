@@ -10,9 +10,3 @@ export interface AuthMethod {
   provider_id?: string;
   extra_data?: any;
 }
-
-export interface AuthenticationContext {
-  client: OAuthClient;
-  user: InternalUser;
-  scopes: string[];
-}
