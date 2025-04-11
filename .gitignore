@@ -1,7 +1,10 @@
  .env
 **/.env
 **/node_modules/
-
+# Private Keys
+*.pem
+master_private.pem
+master_public.pem
 # manejo de logs 
 **/logs
 **/*.log
