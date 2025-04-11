@@ -28,17 +28,7 @@ export const checkPermission = (requiredPermission: string): RequestHandler => {
           return;
         }
       }
-      // const userPermissions = req.user?.Role?.RolePermission || [];
-      // const hasPermission = userPermissions.some(
-      //   (rp: any) =>
-      //     rp.permission.name === requiredPermission ||
-      //     rp.permission.name === "*"
-      // );
 
-      // if (!hasPermission) {
-      //   API.forbidden(res, "Insufficient permissions");
-      //   return;
-      // }
       next();
     } catch (error) {
       API.serverError(res, undefined, error);

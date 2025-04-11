@@ -33,24 +33,20 @@ export const authSchema = z.discriminatedUnion("provider", [
   ciAuthSchema,
 ]);
 
-export const authResponseSchema = z.object({
-  tokens: z.object({
-    access_token: z.string(),
-    refresh_token: z.string(),
-    token_type: z.literal("Bearer"),
-    expires_in: z.number(),
-    id_token: z.string().optional(),
-    scope: z.string().optional(),
-  }),
-});
-
-export const tokenRefreshResponseSchema = z.object({
-  access_token: z.string(),
-  token_type: z.literal("Bearer"),
-  expires_in: z.number(),
-  scope: z.string().optional(),
-});
-
 export type AuthInput = z.infer<typeof authSchema>;
-export type AuthResponse = z.infer<typeof authResponseSchema>;
-export type TokenRefreshResponse = z.infer<typeof tokenRefreshResponseSchema>;
+
+export const AuthUserParamsSchema = z
+  .object({
+    client_id: z.string({
+      required_error: "client_id is required",
+    }),
+    redirect_uri: z
+      .string({
+        required_error: "redirect_uri is required",
+      })
+      .url("Invalid redirect URI"),
+    response_type: z.enum(["code", "token"]).default("code"),
+  })
+  .strict();
+
+export type AuthUserParams = z.infer<typeof AuthUserParamsSchema>;
