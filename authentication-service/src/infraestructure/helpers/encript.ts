@@ -43,5 +43,7 @@ export const validateClientCredentials = async (
   clientSecret: string,
   storedHashedSecret: string
 ): Promise<boolean> => {
+  console.log(clientSecret);
+  console.log(storedHashedSecret);
   return await verifySecret(clientSecret, storedHashedSecret);
 };

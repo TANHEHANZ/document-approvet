@@ -35,7 +35,10 @@ export const generateSecretClient = async (
       },
     });
 
-    API.success(res, "Credentials generated and verified", asiggnCredential);
+    API.success(res, "Credentials generated and verified", {
+      clientId: asiggnCredential.client_id,
+      clientSecret: credentials.clientSecret,
+    });
   } catch (error) {
     console.error("Credential Generation Error:", error);
     API.serverError(res, "Failed to generate credentials");

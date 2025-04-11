@@ -4,7 +4,7 @@ import { validate } from "@/infraestructure/midlweware/validated";
 import {
   CreateOAuthClientSchema,
   QueryParamsOAuthClient,
-} from "@/infraestructure/models/OAuthClient";
+} from "@/infraestructure/models/client/OAuthClient";
 import { checkPermission } from "@/infraestructure/midlweware/check-permission";
 import { PERMISSIONS } from "@shared/index";
 import { getAllClient } from "./controller/getAll";

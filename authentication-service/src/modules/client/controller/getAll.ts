@@ -1,7 +1,7 @@
 import { API } from "@shared/index";
 import { Request, Response } from "express";
 import { prisma } from "@/infraestructure/config/prisma.client";
-import { QueryParamsOAuthClientDTO } from "@/infraestructure/models/OAuthClient";
+import { QueryParamsOAuthClientDTO } from "@/infraestructure/models/client/OAuthClient";
 
 export const getAllClient = async (
   req: Request,
