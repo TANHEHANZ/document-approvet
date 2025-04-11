@@ -15,26 +15,30 @@ export const checkPermission = (requiredPermission: string): RequestHandler => {
         API.forbidden(res, "Permission not found or inactive");
         return;
       }
-      if (req.oauth?.scope) {
-        const hasScope = req.oauth.scope.some(
-          (scope: any) => scope === requiredPermission || scope === "*"
-        );
+      //  debemos validar tanto de los que viene por clientes como de los usuarios
+
+      if (req.decodeAuth.scopes) {
+        const hasScope = req.decodeAuth.scopes.some((scope: any) => {
+          console.log("viene del token:", scope);
+          console.log("Permiso requerido:", requiredPermission);
+          return scope === requiredPermission || scope === "*";
+        });
         if (hasScope) {
           next();
           return;
         }
       }
-      const userPermissions = req.user?.Role?.RolePermission || [];
-      const hasPermission = userPermissions.some(
-        (rp: any) =>
-          rp.permission.name === requiredPermission ||
-          rp.permission.name === "*"
-      );
+      // const userPermissions = req.user?.Role?.RolePermission || [];
+      // const hasPermission = userPermissions.some(
+      //   (rp: any) =>
+      //     rp.permission.name === requiredPermission ||
+      //     rp.permission.name === "*"
+      // );
 
-      if (!hasPermission) {
-        API.forbidden(res, "Insufficient permissions");
-        return;
-      }
+      // if (!hasPermission) {
+      //   API.forbidden(res, "Insufficient permissions");
+      //   return;
+      // }
       next();
     } catch (error) {
       API.serverError(res, undefined, error);

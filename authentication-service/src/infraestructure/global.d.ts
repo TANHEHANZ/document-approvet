@@ -1,4 +1,11 @@
-import { Prisma, User, Role, RolePermission, Permissons } from "@prisma/client";
+import {
+  Prisma,
+  User,
+  Role,
+  RolePermission,
+  Permissons,
+  OAuthClientScopePermission,
+} from "@prisma/client";
 import { AuthPayload } from "./types/jwt";
 import { OAuthClient } from "./types/oauth.types";
 import { AuthenticationContext } from "./types/internal.types";
@@ -14,11 +21,11 @@ declare global {
           })[];
         };
       };
-      auth?: AuthPayload;
-      oauth?: {
-        client: OAuthClient;
-        context?: AuthenticationContext;
-        scope?: string[];
+      decodeAuth?: {
+        client_id: OAuthClient;
+        scopes?: [];
+        type: string;
+        exp: string;
       };
     }
   }

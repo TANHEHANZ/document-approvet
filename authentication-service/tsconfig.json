@@ -30,7 +30,8 @@
   "files": [
     "src/infraestructure/lib/redis/types/config.d.ts",
     "src/infraestructure/lib/redis/types/store.d.ts",
-    "src/infraestructure/lib/redis/types/caching.d.ts"
+    "src/infraestructure/lib/redis/types/caching.d.ts",
+    "src/infraestructure/global.d.ts"
   ],
   "include": ["./src/**/*", "../../shared/**/*", "prisma/seeder"],
   "exclude": ["node_modules", "dist"]

@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import { API } from "@firma-gamc/shared";
-import { AuthPayload } from "../types/jwt";
-import config from "../config/config";
+import { decryptToken } from "../helpers/jwt.decript";
 
 export const authMiddleware = async (
   req: Request,
@@ -10,15 +8,26 @@ export const authMiddleware = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const token = req.cookies?.token;
-
-    if (!token) {
-      API.unauthorized(res, "Token no proporcionado");
+    const authHeader = req.headers.authorization;
+    // tengo que ver que me pasen el token de acceso y no de refrsh
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      API.unauthorized(res, "No token provided");
       return;
     }
-    const secret = config.JWT_SECRET;
-    const decoded = jwt.verify(token, secret) as AuthPayload;
-    req.auth = decoded;
+    const token = authHeader.split(" ")[1];
+    const decodedToken = (await decryptToken(token)) as any;
+
+    if (!decodedToken) {
+      API.unauthorized(res, "Token no proporcionado");
+    }
+    const decode = {
+      client_id: decodedToken.client_id,
+      scopes: decodedToken.scopes,
+      type: decodedToken.type,
+      exp: decodedToken.exp,
+    };
+    req.decodeAuth = decode;
+    console.log(decode);
     next();
   } catch (error: any) {
     console.error("Error en el middleware de autenticación:", error);
