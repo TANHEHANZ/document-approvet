@@ -10,5 +10,11 @@ const config = {
   GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL || "",
 
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "1d",
+
+  hostEmail: process.env.EMAIL_HOST || "smtp.gmail.com",
+  portEmail: parseInt(process.env.EMAIL_PORT || "465"),
+  secureEmail: process.env.EMAIL_SECURE === "false" ? false : true,
+  userEmail: process.env.EMAIL_USER,
+  passwordEmail: process.env.EMAIL_PASSWORD,
 };
 export default config;

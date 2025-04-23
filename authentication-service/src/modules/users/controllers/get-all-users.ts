@@ -14,6 +14,10 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
         },
       },
     });
+    if (users.length === 0) {
+      API.conflict(res, "No se encontraron usuarios");
+      return;
+    }
 
     API.success(res, "Usuarios obtenidos correctamente", users);
   } catch (error) {

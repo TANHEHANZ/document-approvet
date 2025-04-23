@@ -34,4 +34,5 @@ userAuthRoutes.get(
 );
 userAuthRoutes.post("/ci", validate(authSchema), authCi);
 userAuthRoutes.post("/credential", validate(authSchema), authCredential);
+
 export default userAuthRoutes;
