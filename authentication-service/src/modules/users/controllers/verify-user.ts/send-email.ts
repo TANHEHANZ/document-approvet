@@ -9,12 +9,24 @@ export const verifyEmailUser = async (
   res: Response
 ): Promise<void> => {
   try {
-    const templatePath = path.join(__dirname, "template.html");
+    const templatePath = path.join(
+      process.cwd(),
+      "src",
+      "public",
+      "templates",
+      "emails",
+      "verification.html"
+    );
     let emailTemplate = await fs.readFile(templatePath, "utf-8");
 
     emailTemplate = emailTemplate
       .replace("{{userName}}", "John Doe")
-      .replace("{{verificationLink}}", "https://yourapp.com/verify?token=xyz");
+      .replace(
+        "{{verificationLink}}",
+        `${
+          process.env.FRONTEND_URL || "http://localhost:4200"
+        }/auth/verify?token=xyz`
+      );
 
     const send = await sendEmail({
       to: "hantach10@gmail.com",

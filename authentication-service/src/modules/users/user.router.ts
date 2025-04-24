@@ -15,13 +15,11 @@ import { authMiddleware } from "@/infraestructure/midlweware/authentication";
 import { verifyEmailUser } from "./controllers/verify-user.ts/send-email";
 
 const userRouter = Router();
-// userRouter.use(authMiddleware);
+//  manejo de el doble autenticado
+// userRouter.get("/email", verifyEmailUser);
+userRouter.use(authMiddleware);
 
 userRouter.get("/", checkPermission(PERMISSIONS.USER.READ), getUsers);
-
-//  manejo de el doble autenticado
-
-userRouter.get("/email", verifyEmailUser);
 
 // .get("/:id", checkPermission(PERMISSIONS.USER.READ), getUserById)
 // .put("/:id", checkPermission(PERMISSIONS.USER.UPDATE), updateUser)
