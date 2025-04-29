@@ -9,9 +9,28 @@ import compression from "compression";
 export const createServer = () => {
   configureGoogleStrategy();
   const app = express();
+  app.disable("x-powered-by").use(compression());
   app
-    .disable("x-powered-by")
-    .use(compression())
+    .use((req: Request, res: Response, next) => {
+      console.log({
+        "x-forwarded-for": req.headers["x-forwarded-for"] || "not set",
+        "x-real-ip": req.headers["x-real-ip"] || "not set",
+        "req.ip": req.ip || "not set",
+        "socket.remoteAddress": req.socket.remoteAddress || "not set",
+      });
+
+      const ip =
+        req.headers["x-forwarded-for"] ||
+        req.headers["x-real-ip"] ||
+        req.ip ||
+        req.socket.remoteAddress ||
+        "unknown";
+
+      console.log(
+        `📍 Path: ${req.path} | Final IP Used: ${ip} | Method: ${req.method}`
+      );
+      next();
+    })
     .use(express.urlencoded({ extended: true }))
     .use(express.json())
     .use(cors())
@@ -29,6 +48,7 @@ export const createServer = () => {
       })
     )
     .use("/v1/api/", auth);
+
   app.get("/", (req: Request, res: Response) => {
     res.json({
       status: "success",
