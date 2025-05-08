@@ -82,6 +82,7 @@ model Role {
   name           String           @unique
   users          User[]
   RolePermission RolePermission[]
+  NavRole        NavRole[]
 
   @@index([name], name: "idx_roles_name")
   @@map("roles")
@@ -162,6 +163,32 @@ model ScopePermission {
 
   permissionId String
   permission   Permissons @relation(fields: [permissionId], references: [id])
+
+  @@schema("auth")
+}
+
+model Nav {
+  id       String     @id @default(uuid())
+  name     String
+  path     String
+  icon     String
+  color    String?
+  Status   StatusEnum @default(ACTIVE)
+  parentId String?
+  parent   Nav?       @relation("ParentChild", fields: [parentId], references: [id])
+  children Nav[]      @relation("ParentChild")
+  NavRole  NavRole[]
+
+  @@schema("auth")
+}
+
+model NavRole {
+  id     String     @id @default(uuid())
+  navId  String
+  Status StatusEnum @default(ACTIVE)
+  nav    Nav        @relation(fields: [navId], references: [id])
+  roleId String
+  role   Role       @relation(fields: [roleId], references: [id])
 
   @@schema("auth")
 }

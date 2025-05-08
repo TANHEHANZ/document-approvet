@@ -5,6 +5,10 @@ declare global {
         data: ScopeDTO[];
         ttl: 3600;
       };
+      "nav/all": {
+        data: any;
+        ttl: 604800;
+      };
     }
 
     type CacheKeys = keyof CacheModules;
